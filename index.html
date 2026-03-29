@@ -369,12 +369,12 @@
 
                 <div class="form-row" style="display: flex; gap: 12px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Pay Range</label>
-                        <input type="text" name="pay_range" id="pay_range" placeholder="$40-$49/hr">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
                         <label>Avg RO Size</label>
                         <input type="text" name="ro_size" id="ro_size" placeholder="$700-$1,200">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>ASE Status</label>
+                        <input type="text" name="ase_status" id="ase_status" placeholder="L1/A8 or Yes">
                     </div>
                 </div>
 
@@ -482,11 +482,13 @@
             const pay = (text.match(/Pay Range:\s*([^\n\r]+)/i) || [])[1] || "";
             const ro = (text.match(/Average RO Size:\s*([^\n\r]+)/i) || [])[1] || "";
             const specialty = (text.match(/Specialty:\s*([^\n\r]+)/i) || [])[1] || "";
+            const ase = (text.match(/ASE Status:\s*([^\n\r]+)/i) || [])[1] || "";
 
             if (exp) document.getElementById('years_experience').value = exp.trim();
             if (shop) document.getElementById('current_shop').value = shop.trim();
             if (pay) document.getElementById('pay_range').value = pay.trim();
             if (ro) document.getElementById('ro_size').value = ro.trim();
+            if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
             const locMatch = (text.match(/Shop Location:\s*([^\n\r]+)/i) || [])[1] || "";
@@ -572,6 +574,7 @@
                         ${c.years_experience ? `<span>⏳ Exp: ${c.years_experience}</span>` : ''}
                         ${c.current_shop ? `<span>🏢 Shop: ${c.current_shop}</span>` : ''}
                         ${c.ro_size ? `<span>💰 RO: ${c.ro_size}</span>` : ''}
+                        ${c.ase_status ? `<span>🛡️ ASE: ${c.ase_status}</span>` : ''}
                         <span>👤 Interviewer: ${c.interviewer}</span>
                         <span>📅 Date: ${new Date(c.interview_date).toLocaleDateString()}</span>
                     </div>
