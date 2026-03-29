@@ -494,24 +494,34 @@
             if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
-            // Prioritize searching the entire text for the specific shop keywords
+            // Enhanced Location Scan
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
+            let detectedLoc = "";
             for (const loc of locations) {
                 if (text.toLowerCase().includes(loc.toLowerCase())) {
-                    document.getElementById('location').value = loc;
+                    const locEl = document.getElementById('location');
+                    locEl.value = loc;
+                    locEl.dispatchEvent(new Event('change'));
+                    detectedLoc = loc;
                     break;
                 }
             }
 
-            // 🆕 Intelligent Role Detection (focusing on the intro sentence)
-            const introText = text.substring(0, 200).toLowerCase();
-            if (introText.includes("advisor")) {
-                document.getElementById('role').value = "Service Advisor";
-            } else if (introText.includes("tech") || introText.includes("technician")) {
-                document.getElementById('role').value = "A-Level Technician";
+            // Enhanced Role Detection (checking the first 500 characters)
+            const roleEl = document.getElementById('role');
+            const intro = text.substring(0, 500).toLowerCase();
+            let detectedRole = "";
+            
+            if (intro.includes("advisor")) {
+                roleEl.value = "Service Advisor";
+                detectedRole = "Advisor";
+            } else if (intro.includes("tech") || intro.includes("technician")) {
+                roleEl.value = "A-Level Technician";
+                detectedRole = "Technician";
             }
+            roleEl.dispatchEvent(new Event('change'));
 
-            showToast("Magic Auto-Fill Complete! ✨");
+            showToast(`Magic Complete! ✨ Found: ${detectedRole} @ ${detectedLoc}`);
         }
 
         // --- SUBMISSION LOGIC ---
