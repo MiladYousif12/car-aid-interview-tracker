@@ -282,6 +282,16 @@
         }
         .toast-success { background: #10b981; color: white; }
         .toast-error { background: #ef4444; color: white; }
+
+        /* Parsing Success Animation */
+        @keyframes field-glow {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); border-color: #4ade80; }
+            50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(74, 222, 128, 0.1); border-color: #4ade80; }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); border-color: var(--border-color); }
+        }
+        .field-success {
+            animation: field-glow 1.5s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -430,10 +440,22 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
+        // --- UTILITY LOGIC ---
+        function fillAndGlow(id, value) {
+            const el = document.getElementById(id);
+            if (!el || !value) return false;
+            
+            el.value = value.trim();
+            el.classList.remove('field-success');
+            void el.offsetWidth; // Trigger reflow
+            el.classList.add('field-success');
+            return true;
+        }
+
         // Set default date to today
         document.getElementById('interview_date').valueAsDate = new Date();
 
-        // --- MAGIC AUTO-FILL LOGIC ---
+        // --- HIGH-RELIABILITY MAGIC AUTO-FILL ---
         function handleMagicFill() {
             const text = document.getElementById('raw-summary').value;
             if (!text.trim()) {
@@ -441,70 +463,61 @@
                 return;
             }
 
-            // Patterns for extraction
-            const patterns = {
-                name: /(?:First Name|Name):\s*([^\n\r]+)/i,
-                last: /Last Name:\s*([^\n\r]+)/i,
-                phone: /(?:Phone Number|Phone):\s*([\d\-\(\)\s]+)/i,
-                email: /(?:Email Address|Email|@):\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i,
-                location: /(?:Location|Shop):\s*([^\n\r]+)/i,
-                role: /(?:Role|Position):\s*([^\n\r]+)/i,
-            };
+            let foundCount = 0;
 
-            const firstName = (text.match(patterns.name) || [])[1] || "";
-            const lastName = (text.match(patterns.last) || [])[1] || "";
-            const extractedPhone = (text.match(patterns.phone) || [])[1] || "";
-            const extractedEmail = (text.match(patterns.email) || [])[1] || "";
-            
+            // 1. Basic Info (Name, Phone, Email)
+            const firstName = (text.match(/(?:First Name|Name):\s*([^\n\r]+)/i) || [])[1] || "";
+            const lastName = (text.match(/Last Name:\s*([^\n\r]+)/i) || [])[1] || "";
             if (firstName || lastName) {
-                document.getElementById('candidate_name').value = `${firstName} ${lastName}`.trim();
-            }
-            if (extractedPhone) {
-                document.getElementById('phone').value = extractedPhone.trim();
-            }
-            if (extractedEmail) {
-                document.getElementById('email').value = extractedEmail.trim();
+                if (fillAndGlow('candidate_name', `${firstName} ${lastName}`)) foundCount++;
             }
 
-            // New fields from screenshots
-            const exp = (text.match(/Years Experience:\s*([^\n\r]+)/i) || [])[1] || "";
-            const shop = (text.match(/Current Shop:\s*([^\n\r]+)/i) || [])[1] || "";
-            const pay = (text.match(/Pay Range:\s*([^\n\r]+)/i) || [])[1] || "";
-            const ro = (text.match(/Average RO Size:\s*([^\n\r]+)/i) || [])[1] || "";
-            const specialty = (text.match(/Specialty:\s*([^\n\r]+)/i) || [])[1] || "";
-            const ase = (text.match(/ASE Status:\s*([^\n\r]+)/i) || [])[1] || "";
+            const phone = (text.match(/(?:Phone Number|Phone):\s*([\d\-\(\)\s]+)/i) || [])[1];
+            if (fillAndGlow('phone', phone)) foundCount++;
 
-            if (exp) document.getElementById('years_experience').value = exp.trim();
-            if (shop) document.getElementById('current_shop').value = shop.trim();
-            if (pay) document.getElementById('pay_range').value = pay.trim();
-            if (ro) document.getElementById('ro_size').value = ro.trim();
-            if (ase) document.getElementById('ase_status').value = ase.trim();
-            if (specialty) document.getElementById('notes').value = specialty.trim();
+            const email = (text.match(/(?:Email Address|Email|@):\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i) || [])[1];
+            if (fillAndGlow('email', email)) foundCount++;
 
-            // --- TARGETED LOCATION DETECTION ---
+            // 2. Role Detection (Top 1000 chars)
+            const topText = text.substring(0, 1000).toLowerCase();
+            let detectedRole = "";
+            if (topText.includes("advisor")) detectedRole = "Service Advisor";
+            else if (topText.includes("tech") || topText.includes("technician")) detectedRole = "A-Level Technician";
+            if (fillAndGlow('role', detectedRole)) foundCount++;
+
+            // 3. Location Detection (Loop keywords)
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-            let detectedLoc = "";
             for (const loc of locations) {
                 if (text.toLowerCase().includes(loc.toLowerCase())) {
-                    document.getElementById('location').value = loc;
-                    detectedLoc = loc;
+                    if (fillAndGlow('location', loc)) foundCount++;
                     break;
                 }
             }
 
-            // --- TARGETED ROLE DETECTION ---
-            const intro = text.substring(0, 500).toLowerCase();
-            let detectedRole = "";
-            if (intro.includes("advisor")) {
-                detectedRole = "Service Advisor";
-            } else if (intro.includes("tech") || intro.includes("technician")) {
-                detectedRole = "A-Level Technician";
-            }
-            if (detectedRole) {
-                document.getElementById('role').value = detectedRole;
-            }
+            // 4. Detailed Pro Info
+            const exp = (text.match(/Years Experience:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('years_experience', exp)) foundCount++;
 
-            showToast(`✨ Magic: [${detectedRole || 'Ready'}] @ [${detectedLoc || 'Ready'}]`);
+            const shop = (text.match(/Current Shop:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('current_shop', shop)) foundCount++;
+
+            const pay = (text.match(/Pay Range:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('pay_range', pay)) foundCount++;
+
+            const ro = (text.match(/Average RO Size:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('ro_size', ro)) foundCount++;
+
+            const ase = (text.match(/ASE Status:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('ase_status', ase)) foundCount++;
+
+            const specialty = (text.match(/Specialty:\s*([^\n\r]+)/i) || [])[1];
+            if (fillAndGlow('notes', specialty)) foundCount++;
+
+            if (foundCount > 0) {
+                showToast(`Magic Fill Complete! ✨ Updated ${foundCount} fields.`);
+            } else {
+                showToast("Magic Wand found no matches. Check format.", "error");
+            }
         }
 
         // --- SUBMISSION LOGIC ---
