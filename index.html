@@ -350,7 +350,7 @@
                     <label>Candidate Role</label>
                     <div class="select-wrapper">
                         <select name="role" id="role" required>
-                            <option value="Technician">Technician</option>
+                            <option value="A-Level Technician">A-Level Technician</option>
                             <option value="Service Advisor">Service Advisor</option>
                         </select>
                     </div>
@@ -500,6 +500,14 @@
                         break;
                     }
                 }
+            }
+
+            // 🆕 Intelligent Role Detection (from introductory sentence)
+            const lowText = text.toLowerCase();
+            if (lowText.includes("advisor")) {
+                document.getElementById('role').value = "Service Advisor";
+            } else if (lowText.includes("tech") || lowText.includes("technician")) {
+                document.getElementById('role').value = "A-Level Technician";
             }
 
             showToast("Magic Auto-Fill Complete! ✨");
