@@ -290,10 +290,10 @@
 
     <div class="card">
         <header>
-            <div class="logo-placeholder">
-                <img src="https://caraidnow.com/wp-content/uploads/2021/04/Car-Aid-Logo-1.png" alt="Car Aid" class="logo-img">
+            <div class="logo-placeholder" style="background: none; border: none;">
+                <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Interview Tracker Car Aid Interview Tracker</h1>
+            <h1>Car Aid Interview Tracker</h1>
             <p class="subtitle">Management portal for candidate interviews.</p>
         </header>
 
@@ -319,7 +319,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Interview Date</label>
+                    <label>Email</label>
+                    <input type="email" name="email" id="email" placeholder="candidate@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Sent for Interview On</label>
                     <input type="date" name="interview_date" id="interview_date" required>
                 </div>
 
@@ -360,7 +365,7 @@
                 <input type="hidden" name="candidate_name" id="candidate_name">
 
                 <button type="submit" class="submit-btn" id="submit-btn">
-                    <span>🚀 Save to Google Sheets</span>
+                    <span>🚀 Log Interview</span>
                 </button>
             </form>
         </div>
@@ -442,6 +447,9 @@
             if (extractedPhone) {
                 document.getElementById('phone').value = extractedPhone.trim();
             }
+            if (extractedEmail) {
+                document.getElementById('email').value = extractedEmail.trim();
+            }
 
             // Location Detection
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
@@ -498,7 +506,7 @@
                 showToast("Error connecting to database.", "error");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = "<span>🚀 Save to Google Sheets</span>";
+                submitBtn.innerHTML = "<span>🚀 Log Interview</span>";
             }
         });
 

@@ -17,12 +17,13 @@ function doPost(e) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     const data = JSON.parse(e.postData.contents);
     
-    // Column Mapping: [Timestamp, Candidate Name, Role, Phone, Interview Date, Location, Interviewer, Notes]
+    // Column Mapping: [Timestamp, Candidate Name, Role, Phone, Email, Interview Date, Location, Interviewer, Notes]
     const newRow = [
       new Date(), // Timestamp
       data.candidate_name || "Unknown",
       data.role,
       data.phone,
+      data.email || "", // New Email Field
       data.interview_date,
       data.location,
       data.interviewer,
@@ -59,10 +60,11 @@ function doGet(e) {
       candidate_name: row[1],
       role: row[2],
       phone: row[3],
-      interview_date: row[4],
-      location: row[5],
-      interviewer: row[6],
-      notes: row[7]
+      email: row[4],
+      interview_date: row[5],
+      location: row[6],
+      interviewer: row[7],
+      notes: row[8]
     }));
     
     data.reverse(); // Newest first
