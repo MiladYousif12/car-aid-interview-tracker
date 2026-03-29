@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Tracker | Car Aid Recruiting</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --primary-blue: #2563eb;
+            --hover-blue: #3b82f6;
+            --success-green: #10b981;
+            --text-main: #f0f6fc;
+            --text-dim: #8b949e;
+            --border-color: #30363d;
+            --input-bg: rgba(13, 17, 23, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px;
+        }
+
+        /* Main Container matching the screenshot */
+        .card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        /* Header Layout */
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 48px;
+            margin: 0 auto 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .tab-btn.inactive {
+            background: #21262d;
+            color: var(--text-dim);
+        }
+
+        /* Fast Parse Section */
+        .parse-container {
+            border: 1px dashed #4ade8050;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4ade80;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .parse-textarea {
+            width: 100%;
+            height: 80px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .parse-textarea:focus { border-color: #4ade8050; }
+
+        .magic-btn {
+            width: 100%;
+            background: var(--success-green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            appearance: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--hover-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Custom Select Arrow */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: '↕';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            pointer-events: none;
+            font-size: 12px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            background: var(--text-main);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s;
+        }
+        .submit-btn:active { transform: scale(0.98); }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Views */
+        #view-candidates-section { display: none; }
+
+        /* Candidate Card */
+        .candidate-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .candidate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .candidate-name { font-weight: 700; font-size: 16px; }
+        .candidate-role { font-size: 11px; font-weight: 700; color: var(--primary-blue); text-transform: uppercase; letter-spacing: 0.5px; }
+        .candidate-meta { font-size: 13px; color: var(--text-dim); display: flex; flex-direction: column; gap: 4px; }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        .toast-success { background: #10b981; color: white; }
+        .toast-error { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="toast"></div>
+
+    <div class="card">
+        <header>
+            <div class="logo-placeholder">
+                <img src="https://caraidnow.com/wp-content/uploads/2021/04/Car-Aid-Logo-1.png" alt="Car Aid" class="logo-img">
+            </div>
+            <h1>Interview Tracker Car Aid Interview Tracker</h1>
+            <p class="subtitle">Management portal for candidate interviews.</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-log" onclick="switchTab('log')">Log Interview View</button>
+            <button class="tab-btn inactive" id="tab-view" onclick="switchTab('view')">View Candidates</button>
+        </div>
+
+        <!-- Logging Form Section -->
+        <div id="log-interview-section">
+            <div class="parse-container">
+                <div class="section-title">
+                    <span>⚡ Fast Parse (Paste Summary Below)</span>
+                </div>
+                <textarea id="raw-summary" class="parse-textarea" placeholder="Paste candidate summary here... (Name, Phone, etc.)"></textarea>
+                <button onclick="handleMagicFill()" class="magic-btn">🪄 Magic Auto-Fill</button>
+            </div>
+
+            <form id="tracker-form">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" id="phone" placeholder="(555) 000-0000" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Interview Date</label>
+                    <input type="date" name="interview_date" id="interview_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Shop Location</label>
+                    <div class="select-wrapper">
+                        <select name="location" id="location" required>
+                            <option value="Waterford">Waterford</option>
+                            <option value="Southfield">Southfield</option>
+                            <option value="Utica">Utica</option>
+                            <option value="Shelby Township">Shelby Township</option>
+                            <option value="Troy">Troy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Candidate Role</label>
+                    <div class="select-wrapper">
+                        <select name="role" id="role" required>
+                            <option value="Technician">Technician</option>
+                            <option value="Service Advisor">Service Advisor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Interviewer</label>
+                    <input type="text" name="interviewer" id="interviewer" value="Sal" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Quick Notes</label>
+                    <textarea name="notes" id="notes" rows="3" placeholder="Solid background, eager to start..."></textarea>
+                </div>
+
+                <!-- Fields extracted but not explicitly in screenshot form but needed for logic -->
+                <input type="hidden" name="candidate_name" id="candidate_name">
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <span>🚀 Save to Google Sheets</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Candidate Viewing Section -->
+        <div id="view-candidates-section">
+            <div id="candidates-list">
+                <p style="text-align: center; color: var(--text-dim); padding: 40px 0;">Loading candidates...</p>
+            </div>
+        </div>
+
+        <footer>
+            Car Aid Recruiting © 2026<br>
+            Stable Gateway Deployment
+        </footer>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = 'https://script.google.com/a/macros/caraidnow.com/s/AKfycbz_9e5u8o2G9Y-y3Z9E4Z7zVfD-V0ZgW8Z0-3e2s1s-Z0-3e2s1s-Z0-3e2s1s/exec'; // This will be updated with your actual URL
+
+        // --- UI LOGIC ---
+        function switchTab(tab) {
+            const logSection = document.getElementById('log-interview-section');
+            const viewSection = document.getElementById('view-candidates-section');
+            const logTab = document.getElementById('tab-log');
+            const viewTab = document.getElementById('tab-view');
+
+            if (tab === 'log') {
+                logSection.style.display = 'block';
+                viewSection.style.display = 'none';
+                logTab.className = 'tab-btn active';
+                viewTab.className = 'tab-btn inactive';
+            } else {
+                logSection.style.display = 'none';
+                viewSection.style.display = 'block';
+                logTab.className = 'tab-btn inactive';
+                viewTab.className = 'tab-btn active';
+                loadCandidates();
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = type === 'success' ? 'toast-success' : 'toast-error';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // Set default date to today
+        document.getElementById('interview_date').valueAsDate = new Date();
+
+        // --- MAGIC AUTO-FILL LOGIC ---
+        function handleMagicFill() {
+            const text = document.getElementById('raw-summary').value;
+            if (!text.trim()) {
+                showToast("Please paste some text first!", "error");
+                return;
+            }
+
+            // Patterns for extraction
+            const patterns = {
+                name: /(?:First Name|Name):\s*([^\n\r]+)/i,
+                last: /Last Name:\s*([^\n\r]+)/i,
+                phone: /(?:Phone Number|Phone):\s*([\d\-\(\)\s]+)/i,
+                email: /(?:Email Address|Email|@):\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i,
+                location: /(?:Location|Shop):\s*([^\n\r]+)/i,
+                role: /(?:Role|Position):\s*([^\n\r]+)/i,
+            };
+
+            const firstName = (text.match(patterns.name) || [])[1] || "";
+            const lastName = (text.match(patterns.last) || [])[1] || "";
+            const extractedPhone = (text.match(patterns.phone) || [])[1] || "";
+            
+            if (firstName || lastName) {
+                document.getElementById('candidate_name').value = `${firstName} ${lastName}`.trim();
+            }
+            if (extractedPhone) {
+                document.getElementById('phone').value = extractedPhone.trim();
+            }
+
+            // Location Detection
+            const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
+            for (const loc of locations) {
+                if (text.toLowerCase().includes(loc.toLowerCase())) {
+                    document.getElementById('location').value = loc;
+                    break;
+                }
+            }
+
+            // Role Detection
+            if (text.toLowerCase().includes("advisor")) document.getElementById('role').value = "Service Advisor";
+            else if (text.toLowerCase().includes("tech")) document.getElementById('role').value = "Technician";
+
+            showToast("Magic Auto-Fill Complete! ✨");
+        }
+
+        // --- SUBMISSION LOGIC ---
+        const form = document.getElementById('tracker-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "<span>⏳ Saving...</span>";
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Add fallback name if hidden field is empty
+            if (!data.candidate_name) data.candidate_name = "Walk-in / Unknown";
+
+            try {
+                // Post to Google Apps Script
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                showToast("Candidate logged successfully! ✅");
+                form.reset();
+                document.getElementById('raw-summary').value = "";
+                document.getElementById('interview_date').valueAsDate = new Date();
+                
+                // Optional: switch to view tab after success
+                setTimeout(() => switchTab('view'), 1000);
+
+            } catch (err) {
+                console.error(err);
+                showToast("Error connecting to database.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "<span>🚀 Save to Google Sheets</span>";
+            }
+        });
+
+        // --- DATA FETCHING (DUMMY/PLACEHOLDER FOR NOW) ---
+        async function loadCandidates() {
+            const list = document.getElementById('candidates-list');
+            
+            try {
+                // In actual deployment, this would fetch from doGet() of SCRIPT_URL
+                // Since this is a standalone demo, we look at localStorage as a cache
+                const cached = localStorage.getItem('candidates_cache') || '[]';
+                let data = JSON.parse(cached);
+
+                // For the sake of the demo, if we had a real URL we would fetch:
+                /*
+                const res = await fetch(SCRIPT_URL);
+                data = await res.json();
+                */
+
+                if (data.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--text-dim); padding: 40px 0;">No candidates logged yet.</p>';
+                    return;
+                }
+
+                list.innerHTML = data.map(c => `
+                    <div class="candidate-card">
+                        <div class="candidate-header">
+                            <span class="candidate-name">${c.candidate_name}</span>
+                            <span class="candidate-role">${c.role}</span>
+                        </div>
+                        <div class="candidate-meta">
+                            <span>📞 ${c.phone}</span>
+                            <span>📍 ${c.location}</span>
+                            <span>👤 Interviewer: ${c.interviewer}</span>
+                            <span>📅 Date: ${new Date(c.interview_date).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                list.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 40px 0;">Error loading candidate list.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
