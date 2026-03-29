@@ -494,22 +494,20 @@
             if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
-            const locMatch = (text.match(/Shop Location:\s*([^\n\r]+)/i) || [])[1] || "";
-            if (locMatch) {
-                const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-                for (const loc of locations) {
-                    if (locMatch.toLowerCase().includes(loc.toLowerCase())) {
-                        document.getElementById('location').value = loc;
-                        break;
-                    }
+            // Prioritize searching the entire text for the specific shop keywords
+            const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
+            for (const loc of locations) {
+                if (text.toLowerCase().includes(loc.toLowerCase())) {
+                    document.getElementById('location').value = loc;
+                    break;
                 }
             }
 
-            // 🆕 Intelligent Role Detection (from introductory sentence)
-            const lowText = text.toLowerCase();
-            if (lowText.includes("advisor")) {
+            // 🆕 Intelligent Role Detection (focusing on the intro sentence)
+            const introText = text.substring(0, 200).toLowerCase();
+            if (introText.includes("advisor")) {
                 document.getElementById('role').value = "Service Advisor";
-            } else if (lowText.includes("tech") || lowText.includes("technician")) {
+            } else if (introText.includes("tech") || introText.includes("technician")) {
                 document.getElementById('role').value = "A-Level Technician";
             }
 
