@@ -494,20 +494,22 @@
             if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
-            // Enhanced Location Scan
+            // Enhanced Location Scan (aggressive search for workshop names)
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
             let detectedLoc = "";
+            const cleanText = text.replace(/[\u2013\u2014]/g, "-").toLowerCase(); // Normalize dashes
+            
             for (const loc of locations) {
-                if (text.toLowerCase().includes(loc.toLowerCase())) {
+                if (cleanText.includes(loc.toLowerCase())) {
                     const locEl = document.getElementById('location');
                     locEl.value = loc;
                     locEl.dispatchEvent(new Event('change'));
                     detectedLoc = loc;
-                    break;
+                    break; 
                 }
             }
 
-            // Enhanced Role Detection (checking the first 500 characters)
+            // Enhanced Role Detection (First few lines prioritize the role)
             const roleEl = document.getElementById('role');
             const intro = text.substring(0, 500).toLowerCase();
             let detectedRole = "";
@@ -519,9 +521,12 @@
                 roleEl.value = "A-Level Technician";
                 detectedRole = "Technician";
             }
-            roleEl.dispatchEvent(new Event('change'));
+            
+            if (detectedRole) {
+                roleEl.dispatchEvent(new Event('change'));
+            }
 
-            showToast(`Magic Complete! ✨ Found: ${detectedRole} @ ${detectedLoc}`);
+            showToast(`Magic Complete! ✨ Found: ${detectedRole || "Name/Phone"} @ ${detectedLoc || "Check Loc"}`);
         }
 
         // --- SUBMISSION LOGIC ---
