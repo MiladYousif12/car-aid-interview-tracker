@@ -494,39 +494,41 @@
             if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
-            // Enhanced Location Scan (aggressive search for workshop names)
+            // --- BULLETPROOF LOCATION SCAN ---
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-            let detectedLoc = "";
-            const cleanText = text.replace(/[\u2013\u2014]/g, "-").toLowerCase(); // Normalize dashes
+            let detectedLoc = "Not Found";
             
-            for (const loc of locations) {
-                if (cleanText.includes(loc.toLowerCase())) {
+            for (const locName of locations) {
+                const regex = new RegExp(locName.split(' ')[0], 'i'); // Match at least first word
+                if (regex.test(text)) {
                     const locEl = document.getElementById('location');
-                    locEl.value = loc;
-                    locEl.dispatchEvent(new Event('change'));
-                    detectedLoc = loc;
+                    locEl.value = locName; 
+                    if (typeof locEl.onchange === 'function') locEl.onchange();
+                    locEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    detectedLoc = locName;
                     break; 
                 }
             }
 
-            // Enhanced Role Detection (First few lines prioritize the role)
+            // --- BULLETPROOF ROLE DETECTION ---
             const roleEl = document.getElementById('role');
-            const intro = text.substring(0, 500).toLowerCase();
-            let detectedRole = "";
+            const intro = text.substring(0, 1000).toLowerCase(); // Scan more of the text
+            let detectedRole = "Unknown";
             
             if (intro.includes("advisor")) {
                 roleEl.value = "Service Advisor";
                 detectedRole = "Advisor";
-            } else if (intro.includes("tech") || intro.includes("technician")) {
+            } else if (intro.includes("tech") || intro.includes("technician") || intro.includes("a-level")) {
                 roleEl.value = "A-Level Technician";
-                detectedRole = "Technician";
+                detectedRole = "Tech";
             }
             
-            if (detectedRole) {
-                roleEl.dispatchEvent(new Event('change'));
+            if (detectedRole !== "Unknown") {
+                if (typeof roleEl.onchange === 'function') roleEl.onchange();
+                roleEl.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
-            showToast(`Magic Complete! ✨ Found: ${detectedRole || "Name/Phone"} @ ${detectedLoc || "Check Loc"}`);
+            showToast(`✨ Magic: [${detectedRole}] @ [${detectedLoc}]`);
         }
 
         // --- SUBMISSION LOGIC ---
