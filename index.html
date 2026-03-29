@@ -410,7 +410,8 @@
     </div>
 
     <script>
-        // --- DATA PERSISTENCE ---
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE'; 
         const DB_KEY = 'caraid_candidates_v1';
 
         // --- UI LOGIC ---
@@ -532,28 +533,31 @@
             // Add fallback name and ID
             if (!data.candidate_name) data.candidate_name = "Walk-in / Unknown";
             data.timestamp = new Date().toISOString();
-
             try {
-                const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+                // Save to Cloud (Google Sheets)
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
                 
+                // Also update local cache for instant feedback
+                const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
                 if (editingId) {
-                    // --- UPDATE MODE ---
-                    const index = existing.findIndex(c => c.id === editingId);
-                    if (index !== -1) {
-                        data.id = editingId; // Keep the same ID
-                        existing[index] = data;
-                        showToast("Information updated successfully! ✨");
+                    const idx = existing.findIndex(c => c.id === editingId);
+                    if (idx !== -1) {
+                        data.id = editingId;
+                        existing[idx] = data;
                     }
                 } else {
-                    // --- NEW ENTRY MODE ---
-                    data.id = Date.now().toString(); // New Unique ID
-                    existing.unshift(data); // Add to beginning
-                    showToast("Candidate logged successfully! ✅");
+                    data.id = data.id || Date.now().toString();
+                    existing.unshift(data);
                 }
-                
                 localStorage.setItem(DB_KEY, JSON.stringify(existing));
 
-                // Reset form and UI
+                showToast(editingId ? "Candidate updated in cloud! ✨" : "Candidate saved to cloud! ✅");
                 form.reset();
                 document.getElementById('editing_id').value = "";
                 document.getElementById('raw-summary').value = "";
@@ -564,7 +568,7 @@
 
             } catch (err) {
                 console.error(err);
-                showToast("Error saving locally.", "error");
+                showToast("Error connecting to cloud.", "error");
             } finally {
                 submitBtn.disabled = false;
             }
@@ -573,14 +577,32 @@
         // --- DATA FETCHING & MANAGEMENT ---
         async function loadCandidates() {
             const list = document.getElementById('candidates-list');
-            const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            
+            // Show cache first for speed
+            const cached = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            renderList(cached);
 
+            try {
+                // Fetch fresh data from Cloud
+                const res = await fetch(SCRIPT_URL);
+                const cloudData = await res.json();
+                
+                // Update cache and re-render
+                localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
+                renderList(cloudData);
+
+            } catch (err) {
+                console.warn("Could not fetch cloud data, using cache:", err);
+            }
+        }
+
+        function renderList(data) {
+            const list = document.getElementById('candidates-list');
             if (data.length === 0) {
                 list.innerHTML = `
                     <div style="text-align: center; color: var(--text-dim); padding: 60px 20px;">
-                        <span style="font-size: 40px; display: block; margin-bottom: 20px; opacity: 0.3;">📋</span>
-                        <p>No candidates logged yet.</p>
-                        <p style="font-size: 12px; margin-top: 10px;">Candidates you add will appear here securely.</p>
+                        <span style="font-size: 40px; display: block; margin-bottom: 20px; opacity: 0.3;">☁️</span>
+                        <p>No candidates in cloud yet.</p>
                     </div>`;
                 return;
             }
