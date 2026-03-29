@@ -292,6 +292,21 @@
         .field-success {
             animation: field-glow 1.5s ease-out;
         }
+
+        /* Debug UI */
+        #debug-console {
+            margin-top: 24px;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 10px;
+            color: #4ade80;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -303,8 +318,11 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker</h1>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.5</small></h1>
             <p class="subtitle">Management portal for candidate interviews.</p>
+            <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
+                🔄 Force Hard Reload (Cache Fix)
+            </button>
         </header>
 
         <div class="tabs">
@@ -403,6 +421,7 @@
         <footer>
             Car Aid Recruiting © 2026<br>
             Stable Gateway Deployment
+            <div id="debug-console"></div>
         </footer>
     </div>
 
@@ -440,6 +459,19 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
+        function logDebug(msg) {
+            const console = document.getElementById('debug-console');
+            console.style.display = 'block';
+            console.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function forceReload() {
+            window.location.href = window.location.pathname + '?v=' + Date.now();
+        }
+
+        logDebug("Car Aid Tracker v2.5 initialized.");
+
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
             const el = document.getElementById(id);
@@ -457,9 +489,11 @@
 
         // --- HIGH-RELIABILITY MAGIC AUTO-FILL ---
         function handleMagicFill() {
+            logDebug("Magic wand ✨ triggered...");
             const text = document.getElementById('raw-summary').value;
             if (!text.trim()) {
                 showToast("Please paste some text first!", "error");
+                logDebug("Error: No text in box.");
                 return;
             }
 
@@ -469,54 +503,76 @@
             const firstName = (text.match(/(?:First Name|Name):\s*([^\n\r]+)/i) || [])[1] || "";
             const lastName = (text.match(/Last Name:\s*([^\n\r]+)/i) || [])[1] || "";
             if (firstName || lastName) {
-                if (fillAndGlow('candidate_name', `${firstName} ${lastName}`)) foundCount++;
+                if (fillAndGlow('candidate_name', `${firstName} ${lastName}`)) {
+                    foundCount++;
+                    logDebug(`Found Name: ${firstName} ${lastName}`);
+                }
             }
 
             const phone = (text.match(/(?:Phone Number|Phone):\s*([\d\-\(\)\s]+)/i) || [])[1];
-            if (fillAndGlow('phone', phone)) foundCount++;
+            if (fillAndGlow('phone', phone)) {
+                 foundCount++;
+                 logDebug(`Found Phone: ${phone}`);
+            }
 
             const email = (text.match(/(?:Email Address|Email|@):\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i) || [])[1];
-            if (fillAndGlow('email', email)) foundCount++;
+            if (fillAndGlow('email', email)) {
+                foundCount++;
+                logDebug(`Found Email: ${email}`);
+            }
 
             // 2. Role Detection (Top 1000 chars)
             const topText = text.substring(0, 1000).toLowerCase();
             let detectedRole = "";
             if (topText.includes("advisor")) detectedRole = "Service Advisor";
             else if (topText.includes("tech") || topText.includes("technician")) detectedRole = "A-Level Technician";
-            if (fillAndGlow('role', detectedRole)) foundCount++;
+            
+            if (detectedRole && fillAndGlow('role', detectedRole)) {
+                foundCount++;
+                logDebug(`Role Detected: ${detectedRole}`);
+            } else {
+                logDebug("Role Search: No keyword match in intro.");
+            }
 
             // 3. Location Detection (Loop keywords)
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
+            let foundLoc = false;
             for (const loc of locations) {
                 if (text.toLowerCase().includes(loc.toLowerCase())) {
-                    if (fillAndGlow('location', loc)) foundCount++;
+                    if (fillAndGlow('location', loc)) {
+                        foundCount++;
+                        logDebug(`Location Found: ${loc}`);
+                        foundLoc = true;
+                    }
                     break;
                 }
             }
+            if (!foundLoc) logDebug("Location Search: No keywords found in summary.");
 
             // 4. Detailed Pro Info
-            const exp = (text.match(/Years Experience:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('years_experience', exp)) foundCount++;
+            const fields = [
+                { id: 'years_experience', name: 'Years Exp', regex: /Years Experience:\s*([^\n\r]+)/i },
+                { id: 'current_shop', name: 'Cur Shop', regex: /Current Shop:\s*([^\n\r]+)/i },
+                { id: 'pay_range', name: 'Pay Range', regex: /Pay Range:\s*([^\n\r]+)/i },
+                { id: 'ro_size', name: 'RO Size', regex: /Average RO Size:\s*([^\n\r]+)/i },
+                { id: 'ase_status', name: 'ASE Status', regex: /ASE Status:\s*([^\n\r]+)/i },
+                { id: 'notes', name: 'Specialty', regex: /Specialty:\s*([^\n\r]+)/i }
+            ];
 
-            const shop = (text.match(/Current Shop:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('current_shop', shop)) foundCount++;
-
-            const pay = (text.match(/Pay Range:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('pay_range', pay)) foundCount++;
-
-            const ro = (text.match(/Average RO Size:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('ro_size', ro)) foundCount++;
-
-            const ase = (text.match(/ASE Status:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('ase_status', ase)) foundCount++;
-
-            const specialty = (text.match(/Specialty:\s*([^\n\r]+)/i) || [])[1];
-            if (fillAndGlow('notes', specialty)) foundCount++;
+            fields.forEach(field => {
+                const match = (text.match(field.regex) || [])[1];
+                if (match && fillAndGlow(field.id, match)) {
+                    foundCount++;
+                    logDebug(`Field Found: ${field.name}`);
+                }
+            });
 
             if (foundCount > 0) {
                 showToast(`Magic Fill Complete! ✨ Updated ${foundCount} fields.`);
+                logDebug(`Fill Successful: ${foundCount} items.`);
             } else {
                 showToast("Magic Wand found no matches. Check format.", "error");
+                logDebug("Search Ended: 0 matches found.");
             }
         }
 
