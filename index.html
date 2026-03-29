@@ -335,25 +335,12 @@
 
                 <div class="form-group">
                     <label>Shop Location</label>
-                    <div class="select-wrapper">
-                        <select name="location" id="location" required>
-                            <option value="Waterford">Waterford</option>
-                            <option value="Southfield">Southfield</option>
-                            <option value="Utica">Utica</option>
-                            <option value="Shelby Township">Shelby Township</option>
-                            <option value="Troy">Troy</option>
-                        </select>
-                    </div>
+                    <input type="text" name="location" id="location" placeholder="Southfield, Troy, Waterford..." required>
                 </div>
 
                 <div class="form-group">
                     <label>Candidate Role</label>
-                    <div class="select-wrapper">
-                        <select name="role" id="role" required>
-                            <option value="A-Level Technician">A-Level Technician</option>
-                            <option value="Service Advisor">Service Advisor</option>
-                        </select>
-                    </div>
+                    <input type="text" name="role" id="role" placeholder="A-Level Technician or Service Advisor..." required>
                 </div>
 
                 <div class="form-row" style="display: flex; gap: 12px;">
@@ -494,41 +481,30 @@
             if (ase) document.getElementById('ase_status').value = ase.trim();
             if (specialty) document.getElementById('notes').value = specialty.trim();
 
-            // --- BULLETPROOF LOCATION SCAN ---
+            // --- TARGETED LOCATION DETECTION ---
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-            let detectedLoc = "Not Found";
-            
-            for (const locName of locations) {
-                const regex = new RegExp(locName.split(' ')[0], 'i'); // Match at least first word
-                if (regex.test(text)) {
-                    const locEl = document.getElementById('location');
-                    locEl.value = locName; 
-                    if (typeof locEl.onchange === 'function') locEl.onchange();
-                    locEl.dispatchEvent(new Event('change', { bubbles: true }));
-                    detectedLoc = locName;
-                    break; 
+            let detectedLoc = "";
+            for (const loc of locations) {
+                if (text.toLowerCase().includes(loc.toLowerCase())) {
+                    document.getElementById('location').value = loc;
+                    detectedLoc = loc;
+                    break;
                 }
             }
 
-            // --- BULLETPROOF ROLE DETECTION ---
-            const roleEl = document.getElementById('role');
-            const intro = text.substring(0, 1000).toLowerCase(); // Scan more of the text
-            let detectedRole = "Unknown";
-            
+            // --- TARGETED ROLE DETECTION ---
+            const intro = text.substring(0, 500).toLowerCase();
+            let detectedRole = "";
             if (intro.includes("advisor")) {
-                roleEl.value = "Service Advisor";
-                detectedRole = "Advisor";
-            } else if (intro.includes("tech") || intro.includes("technician") || intro.includes("a-level")) {
-                roleEl.value = "A-Level Technician";
-                detectedRole = "Tech";
+                detectedRole = "Service Advisor";
+            } else if (intro.includes("tech") || intro.includes("technician")) {
+                detectedRole = "A-Level Technician";
             }
-            
-            if (detectedRole !== "Unknown") {
-                if (typeof roleEl.onchange === 'function') roleEl.onchange();
-                roleEl.dispatchEvent(new Event('change', { bubbles: true }));
+            if (detectedRole) {
+                document.getElementById('role').value = detectedRole;
             }
 
-            showToast(`✨ Magic: [${detectedRole}] @ [${detectedLoc}]`);
+            showToast(`✨ Magic: [${detectedRole || 'Ready'}] @ [${detectedLoc || 'Ready'}]`);
         }
 
         // --- SUBMISSION LOGIC ---
