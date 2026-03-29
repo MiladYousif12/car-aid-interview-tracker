@@ -388,6 +388,8 @@
                     <textarea name="notes" id="notes" rows="4" placeholder="Solid background, eager to start..."></textarea>
                 </div>
 
+                <input type="hidden" name="editing_id" id="editing_id">
+
                 <button type="submit" class="submit-btn" id="submit-btn">
                     <span>🚀 Log Interview</span>
                 </button>
@@ -520,29 +522,44 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const editingId = document.getElementById('editing_id').value;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = "<span>⏳ Saving...</span>";
+            submitBtn.innerHTML = `<span>⏳ ${editingId ? 'Updating...' : 'Saving...'}</span>`;
 
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
             // Add fallback name and ID
             if (!data.candidate_name) data.candidate_name = "Walk-in / Unknown";
-            data.id = Date.now().toString(); // Unique ID for deletion
             data.timestamp = new Date().toISOString();
 
             try {
-                // Save to Local Storage
                 const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-                existing.unshift(data); // Add to beginning of list
+                
+                if (editingId) {
+                    // --- UPDATE MODE ---
+                    const index = existing.findIndex(c => c.id === editingId);
+                    if (index !== -1) {
+                        data.id = editingId; // Keep the same ID
+                        existing[index] = data;
+                        showToast("Information updated successfully! ✨");
+                    }
+                } else {
+                    // --- NEW ENTRY MODE ---
+                    data.id = Date.now().toString(); // New Unique ID
+                    existing.unshift(data); // Add to beginning
+                    showToast("Candidate logged successfully! ✅");
+                }
+                
                 localStorage.setItem(DB_KEY, JSON.stringify(existing));
 
-                showToast("Candidate logged successfully! ✅");
+                // Reset form and UI
                 form.reset();
+                document.getElementById('editing_id').value = "";
                 document.getElementById('raw-summary').value = "";
                 document.getElementById('interview_date').valueAsDate = new Date();
+                submitBtn.innerHTML = "<span>🚀 Log Interview</span>";
                 
-                // Switch to view tab locally
                 setTimeout(() => switchTab('view'), 800);
 
             } catch (err) {
@@ -550,7 +567,6 @@
                 showToast("Error saving locally.", "error");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = "<span>🚀 Log Interview</span>";
             }
         });
 
@@ -586,11 +602,42 @@
                         <span>👤 Interviewer: ${c.interviewer}</span>
                         <span>📅 Date: ${new Date(c.interview_date).toLocaleDateString()}</span>
                     </div>
-                    <button onclick="deleteCandidate('${c.id}')" style="background: none; border: none; color: #ef4444; font-size: 11px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); width: 100%; padding-top: 8px; text-align: left; cursor: pointer;">
-                        🗑️ Delete Candidate Record
-                    </button>
+                    <div style="display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                        <button onclick="editCandidate('${c.id}')" style="flex: 1; background: none; border: 1px solid var(--primary-blue); border-radius: 6px; color: var(--primary-blue); font-size: 11px; padding: 6px; cursor: pointer; font-weight: 600;">
+                            ✏️ Edit Info
+                        </button>
+                        <button onclick="deleteCandidate('${c.id}')" style="background: none; border: none; color: #ef4444; font-size: 11px; padding: 6px; cursor: pointer; opacity: 0.7;">
+                            🗑️ Delete
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function editCandidate(id) {
+            const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            const candidate = data.find(c => c.id === id);
+            
+            if (candidate) {
+                // Populate all fields
+                document.getElementById('editing_id').value = candidate.id;
+                document.getElementById('candidate_name').value = candidate.candidate_name;
+                document.getElementById('phone').value = candidate.phone;
+                document.getElementById('email').value = candidate.email;
+                document.getElementById('location').value = candidate.location;
+                document.getElementById('role').value = candidate.role;
+                document.getElementById('years_experience').value = candidate.years_experience || "";
+                document.getElementById('current_shop').value = candidate.current_shop || "";
+                document.getElementById('ro_size').value = candidate.ro_size || "";
+                document.getElementById('pay_range').value = candidate.pay_range || "";
+                document.getElementById('ase_status').value = candidate.ase_status || "";
+                document.getElementById('notes').value = candidate.notes;
+                
+                // Switch to form tab and change button text
+                switchTab('log');
+                document.getElementById('submit-btn').innerHTML = "<span>📝 Update Candidate</span>";
+                showToast("Candidate info populated in form.");
+            }
         }
 
         function deleteCandidate(id) {
