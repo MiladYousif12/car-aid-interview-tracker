@@ -314,12 +314,17 @@
 
             <form id="tracker-form">
                 <div class="form-group">
+                    <label>Candidate Name (First / Last)</label>
+                    <input type="text" name="candidate_name" id="candidate_name" placeholder="Jonathan Shumake II" required>
+                </div>
+
+                <div class="form-group">
                     <label>Phone Number</label>
                     <input type="tel" name="phone" id="phone" placeholder="(555) 000-0000" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Email</label>
+                    <label>Email Address</label>
                     <input type="email" name="email" id="email" placeholder="candidate@email.com">
                 </div>
 
@@ -351,18 +356,37 @@
                     </div>
                 </div>
 
+                <div class="form-row" style="display: flex; gap: 12px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Years Experience</label>
+                        <input type="text" name="years_experience" id="years_experience" placeholder="10+ years">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Current Shop</label>
+                        <input type="text" name="current_shop" id="current_shop" placeholder="Belle Tire">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display: flex; gap: 12px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Pay Range</label>
+                        <input type="text" name="pay_range" id="pay_range" placeholder="$40-$49/hr">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Avg RO Size</label>
+                        <input type="text" name="ro_size" id="ro_size" placeholder="$700-$1,200">
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Interviewer</label>
                     <input type="text" name="interviewer" id="interviewer" value="Sal" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Quick Notes</label>
-                    <textarea name="notes" id="notes" rows="3" placeholder="Solid background, eager to start..."></textarea>
+                    <label>Specialty & Notes</label>
+                    <textarea name="notes" id="notes" rows="4" placeholder="Solid background, eager to start..."></textarea>
                 </div>
-
-                <!-- Fields extracted but not explicitly in screenshot form but needed for logic -->
-                <input type="hidden" name="candidate_name" id="candidate_name">
 
                 <button type="submit" class="submit-btn" id="submit-btn">
                     <span>🚀 Log Interview</span>
@@ -440,6 +464,7 @@
             const firstName = (text.match(patterns.name) || [])[1] || "";
             const lastName = (text.match(patterns.last) || [])[1] || "";
             const extractedPhone = (text.match(patterns.phone) || [])[1] || "";
+            const extractedEmail = (text.match(patterns.email) || [])[1] || "";
             
             if (firstName || lastName) {
                 document.getElementById('candidate_name').value = `${firstName} ${lastName}`.trim();
@@ -451,18 +476,29 @@
                 document.getElementById('email').value = extractedEmail.trim();
             }
 
-            // Location Detection
-            const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-            for (const loc of locations) {
-                if (text.toLowerCase().includes(loc.toLowerCase())) {
-                    document.getElementById('location').value = loc;
-                    break;
+            // New fields from screenshots
+            const exp = (text.match(/Years Experience:\s*([^\n\r]+)/i) || [])[1] || "";
+            const shop = (text.match(/Current Shop:\s*([^\n\r]+)/i) || [])[1] || "";
+            const pay = (text.match(/Pay Range:\s*([^\n\r]+)/i) || [])[1] || "";
+            const ro = (text.match(/Average RO Size:\s*([^\n\r]+)/i) || [])[1] || "";
+            const specialty = (text.match(/Specialty:\s*([^\n\r]+)/i) || [])[1] || "";
+
+            if (exp) document.getElementById('years_experience').value = exp.trim();
+            if (shop) document.getElementById('current_shop').value = shop.trim();
+            if (pay) document.getElementById('pay_range').value = pay.trim();
+            if (ro) document.getElementById('ro_size').value = ro.trim();
+            if (specialty) document.getElementById('notes').value = specialty.trim();
+
+            const locMatch = (text.match(/Shop Location:\s*([^\n\r]+)/i) || [])[1] || "";
+            if (locMatch) {
+                const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
+                for (const loc of locations) {
+                    if (locMatch.toLowerCase().includes(loc.toLowerCase())) {
+                        document.getElementById('location').value = loc;
+                        break;
+                    }
                 }
             }
-
-            // Role Detection
-            if (text.toLowerCase().includes("advisor")) document.getElementById('role').value = "Service Advisor";
-            else if (text.toLowerCase().includes("tech")) document.getElementById('role').value = "Technician";
 
             showToast("Magic Auto-Fill Complete! ✨");
         }
@@ -533,6 +569,9 @@
                         <span>📞 ${c.phone}</span>
                         ${c.email ? `<span>📧 ${c.email}</span>` : ''}
                         <span>📍 ${c.location}</span>
+                        ${c.years_experience ? `<span>⏳ Exp: ${c.years_experience}</span>` : ''}
+                        ${c.current_shop ? `<span>🏢 Shop: ${c.current_shop}</span>` : ''}
+                        ${c.ro_size ? `<span>💰 RO: ${c.ro_size}</span>` : ''}
                         <span>👤 Interviewer: ${c.interviewer}</span>
                         <span>📅 Date: ${new Date(c.interview_date).toLocaleDateString()}</span>
                     </div>
