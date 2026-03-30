@@ -67,7 +67,7 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const rows = sheet.getDataRange().getValues();
   
@@ -87,7 +87,14 @@ function doGet() {
   
   data.reverse(); // Newest first
   
-  return ContentService.createTextOutput(JSON.stringify(data))
+  const json = JSON.stringify(data);
+  // Check for JSONP callback
+  if (e.parameter.callback) {
+    return ContentService.createTextOutput(e.parameter.callback + '(' + json + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  
+  return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }
 

@@ -318,13 +318,13 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.7</small></h1>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.8</small></h1>
             <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
                 ☁️ Sync Status: <span id="status-text">Connecting...</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Sync Fix v2.7)
+                🔄 Force Hard Reload (JSONP Fix v2.8)
             </button>
         </header>
 
@@ -480,7 +480,7 @@
             statusText.style.color = status === 'ok' ? '#10b981' : '#ef4444';
         }
 
-        logDebug("Car Aid Tracker v2.7 initialized.");
+        logDebug("Car Aid Tracker v2.8 initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -644,8 +644,9 @@
             }
         });
 
-        // --- ROBUST DATA FETCHING & SYNC ---
-        async function loadCandidates() {
+        // --- NUCLEAR RELIABILITY: JSONP SYNC ---
+        // This bypasses CORS by using a dynamic script tag
+        function loadCandidates() {
             const list = document.getElementById('candidates-list');
             
             // 1. Show local cache immediately for speed
@@ -653,29 +654,33 @@
             renderList(cached);
             logDebug(`Loaded ${cached.length} records from local cache.`);
 
-            try {
-                updateSyncUI('pending', 'Syncing with Cloud...');
-                logDebug("Fetching from Google Sheets...");
-                
-                // Fetch fresh data from Cloud 
-                const res = await fetch(SCRIPT_URL);
-                if (!res.ok) {
-                    throw new Error(`HTTP Error ${res.status}: ${res.statusText}`);
-                }
-                
-                const cloudData = await res.json();
-                logDebug(`Sync Success: ${cloudData.length} records fetched.`);
+            updateSyncUI('pending', 'Syncing with Cloud (Secure)...');
+            logDebug("Requesting JSONP handshake...");
+
+            // Create global callback name
+            const callbackName = 'jsonp_cb_' + Date.now();
+            window[callbackName] = function(cloudData) {
+                logDebug(`JSONP Success: ${cloudData.length} records fetched.`);
                 
                 // Update local cache and re-render
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
                 renderList(cloudData);
-                updateSyncUI('ok', 'Connected & Synced');
+                updateSyncUI('ok', 'Connected & Synced (Nuclear)');
+                
+                // Cleanup
+                delete window[callbackName];
+                document.getElementById(callbackName).remove();
+            };
 
-            } catch (err) {
-                console.error(err);
-                logDebug(`Sync Error: ${err.message}`);
+            // Inject script tag for cross-domain bypass
+            const script = document.createElement('script');
+            script.id = callbackName;
+            script.src = `${SCRIPT_URL}?callback=${callbackName}`;
+            script.onerror = () => {
+                logDebug("JSONP Error: Sync blocked by network.");
                 updateSyncUI('error', 'Sync Failed (Offline Mode)');
-            }
+            };
+            document.body.appendChild(script);
         }
 
         function renderList(data) {
