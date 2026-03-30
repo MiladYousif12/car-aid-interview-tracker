@@ -318,10 +318,13 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.5</small></h1>
-            <p class="subtitle">Management portal for candidate interviews.</p>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.6</small></h1>
+            <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
+            <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
+                ☁️ Sync Status: <span id="status-text">Connecting...</span>
+            </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Cache Fix)
+                🔄 Force Hard Reload (v2.6 Fix)
             </button>
         </header>
 
@@ -470,7 +473,14 @@
             window.location.href = window.location.pathname + '?v=' + Date.now();
         }
 
-        logDebug("Car Aid Tracker v2.5 initialized.");
+        function updateSyncUI(status, msg) {
+            const statusText = document.getElementById('status-text');
+            if (!statusText) return;
+            statusText.innerText = msg;
+            statusText.style.color = status === 'ok' ? '#10b981' : '#ef4444';
+        }
+
+        logDebug("Car Aid Tracker v2.6 initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -634,25 +644,36 @@
             }
         });
 
-        // --- DATA FETCHING & MANAGEMENT ---
+        // --- ROBUST DATA FETCHING & SYNC ---
         async function loadCandidates() {
             const list = document.getElementById('candidates-list');
             
-            // Show cache first for speed
+            // 1. Show local cache immediately for speed
             const cached = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             renderList(cached);
+            logDebug(`Loaded ${cached.length} records from local cache.`);
 
             try {
-                // Fetch fresh data from Cloud
-                const res = await fetch(SCRIPT_URL);
-                const cloudData = await res.json();
+                updateSyncUI('pending', 'Syncing with Cloud...');
+                logDebug("Fetching from Google Sheets...");
                 
-                // Update cache and re-render
+                // Fetch fresh data from Cloud 
+                // Note: Apps Script requires specific handling for GET
+                const res = await fetch(SCRIPT_URL);
+                if (!res.ok) throw new Error("Cloud connection failed.");
+                
+                const cloudData = await res.json();
+                logDebug(`Sync Success: ${cloudData.length} records fetched.`);
+                
+                // Update local cache and re-render
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
                 renderList(cloudData);
+                updateSyncUI('ok', 'Connected & Synced');
 
             } catch (err) {
-                console.warn("Could not fetch cloud data, using cache:", err);
+                console.error(err);
+                logDebug("Sync Error: Using offline mode.");
+                updateSyncUI('error', 'Sync Failed (Offline Mode)');
             }
         }
 
