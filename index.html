@@ -438,7 +438,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaC1bX0BPlLrPrwaVg29mk7A70vGaGtRgncAyLzCWWoB3Ku2hRxVZUxXXjXC2o27IFwQ/exec'; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycB1w3lV_qpVTfOAXwaB49d79X82s1AVqdIc7delAfgU3ixl3PhpChefKzTiN1DHTL4w/exec'; 
         const DB_KEY = 'caraid_candidates_v1';
 
         // --- UI LOGIC ---
@@ -488,8 +488,44 @@
             statusText.style.color = status === 'ok' ? '#10b981' : '#ef4444';
         }
 
--        logDebug("Car Aid Tracker v2.8 initialized.");
-+        logDebug("Car Aid Tracker v2.9.2 [Restored Stable] initialized.");
+        logDebug("Car Aid Tracker v2.9.2 [Stable Restoration] initialized.");
+        
+        // --- DATA RECOVERY ENGINE (Emergency Tool) ---
+        function runDataRecovery() {
+            logDebug("Scanning storage for lost candidates...");
+            const oldKeys = ['caraid_candidates', 'interview_tracker_db', 'caraid_candidates_v1_backup'];
+            let recoveredCount = 0;
+            
+            const currentData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            const currentIds = new Set(currentData.map(c => c.id));
+            
+            oldKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && Array.isArray(data)) {
+                        data.forEach(item => {
+                            if (!currentIds.has(item.id)) {
+                                currentData.push(item);
+                                currentIds.add(item.id);
+                                recoveredCount++;
+                            }
+                        });
+                    }
+                } catch(e) {}
+            });
+            
+            if (recoveredCount > 0) {
+                localStorage.setItem(DB_KEY, JSON.stringify(currentData));
+                logDebug(`[Success] Restored ${recoveredCount} records from device history.`);
+                showToast(`Data Recovery: Found ${recoveredCount} candidates!`);
+                renderList(currentData);
+            } else {
+                logDebug("No local data found in older keys.");
+            }
+        }
+        
+        // Run migration automatically on load
+        runDataRecovery();
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
