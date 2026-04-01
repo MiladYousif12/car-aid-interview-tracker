@@ -298,7 +298,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .role-advisor { background: #f59e0b; color: white; } /* Vivid Orange */
-        .role-tech { background: #3b82f6; color: white; } /* Vivid Blue */
+        .role-tech { background: #a3e635; color: #000; font-weight: 900; } /* Lime Green */
         .role-other { background: var(--border-color); color: var(--text-dim); }
 
         .cand-grid {
@@ -682,8 +682,8 @@
                         <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ Edit</button>
                         <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ Del</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         function copyBrief(id) {
