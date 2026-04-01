@@ -68,32 +68,43 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const rows = sheet.getDataRange().getValues();
-  
-  const data = rows.slice(1).map(row => ({
-    timestamp: row[0],
-    candidate_name: row[1],
-    role: row[2],
-    phone: row[3],
-    email: row[4],
-    interview_date: row[5],
-    location: row[6],
-    years_experience: row[7],
-    current_shop: row[8],
-    pay_range: row[9],
-    id: row[10]
-  }));
-  
-  data.reverse(); // Newest first
-  
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById('INSERT_YOUR_SHEET_ID_HERE');
+    const sheet = ss.getActiveSheet();
+    const rows = sheet.getDataRange().getValues();
+    
+    if (rows.length < 2) {
+      return returnData([], e.parameter.callback);
+    }
+    
+    const data = rows.slice(1).map(row => ({
+      timestamp: row[0],
+      candidate_name: row[1],
+      role: row[2],
+      phone: row[3],
+      email: row[4],
+      interview_date: row[5],
+      location: row[6],
+      years_experience: row[7],
+      current_shop: row[8],
+      pay_range: row[9],
+      id: row[10]
+    }));
+    
+    data.reverse(); // Newest first
+    return returnData(data, e.parameter.callback);
+    
+  } catch (err) {
+    return returnData({ status: 'error', message: err.toString() }, e.parameter.callback);
+  }
+}
+
+function returnData(data, callback) {
   const json = JSON.stringify(data);
-  // Check for JSONP callback
-  if (e.parameter.callback) {
-    return ContentService.createTextOutput(e.parameter.callback + '(' + json + ')')
+  if (callback) {
+    return ContentService.createTextOutput(callback + '(' + json + ')')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
-  
   return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }

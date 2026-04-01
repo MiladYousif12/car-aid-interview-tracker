@@ -319,7 +319,7 @@
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
 -            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.8</small></h1>
-+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.3 (Stable Restoration)</small></h1>
++            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.4 (Stable Restoration)</small></h1>
             <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
                 ☁️ Sync Status: <span id="status-text">Restored stable (v2.9)</span>
@@ -541,8 +541,8 @@
                 logDebug(`Found Email: ${email}`);
             }
 
-            // 2. Role Detection (Top 1000 chars)
-            const topText = text.substring(0, 1000).toLowerCase();
+            // 2. Role Detection (Lenient anywhere check)
+            const topText = text.toLowerCase();
             let detectedRole = "";
             if (topText.includes("advisor")) detectedRole = "Service Advisor";
             else if (topText.includes("tech") || topText.includes("technician")) detectedRole = "A-Level Technician";
@@ -551,14 +551,14 @@
                 foundCount++;
                 logDebug(`Role Detected: ${detectedRole}`);
             } else {
-                logDebug("Role Search: No keyword match in intro.");
+                logDebug("Role Search: No keyword match in text.");
             }
 
-            // 3. Location Detection (Loop keywords)
+            // 3. Location Detection (Case-insensitive)
             const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
             let foundLoc = false;
             for (const loc of locations) {
-                if (text.toLowerCase().includes(loc.toLowerCase())) {
+                if (topText.includes(loc.toLowerCase())) {
                     if (fillAndGlow('location', loc)) {
                         foundCount++;
                         logDebug(`Location Found: ${loc}`);
@@ -683,7 +683,15 @@
 
             window[callbackName] = function(cloudData) {
                 clearTimeout(syncTimeout);
-                logDebug(`[Success] Synced ${cloudData.length} records from Google.`);
+                
+                if (cloudData && cloudData.status === 'error') {
+                    logDebug(`[Error] Cloud Script Error: ${cloudData.message}`);
+                    updateSyncUI('error', 'Spreadsheet Link Error');
+                    showToast("Google Script Error: Check your link.", "error");
+                    return;
+                }
+
+                logDebug(`[Success] Synced ${cloudData.length || 0} records from Google.`);
                 if (nwWarning) nwWarning.style.display = 'none';
                 
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
