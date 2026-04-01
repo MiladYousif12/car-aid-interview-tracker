@@ -319,13 +319,13 @@
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
 -            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.8</small></h1>
-+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.4 (Stable Restoration)</small></h1>
-            <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
++            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.5 [Local Edition]</small></h1>
+            <p class="subtitle">Secure Local-Only Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                ☁️ Sync Status: <span id="status-text">Restored stable (v2.9)</span>
+                🏠 Storage: <span id="status-text" style="color: #10b981;">Direct Mode (Stable)</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Final Stable v2.9)
+                🔄 Force Hard Reload (Local v2.9)
             </button>
             <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
                 ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
@@ -439,7 +439,6 @@
 
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWbJTkB03LwVysNIhAaPrah65AZdyX5YH8XHD7sVFBDw5duKceGahAG7sTiJOyH4AgSw/exec'; 
         const DB_KEY = 'caraid_candidates_v1';
 
         // --- UI LOGIC ---
@@ -486,11 +485,47 @@
             const statusText = document.getElementById('status-text');
             if (!statusText) return;
             statusText.innerText = msg;
-            statusText.style.color = status === 'ok' ? '#10b981' : '#ef4444';
+            statusText.style.color = (status === 'ok' || status === 'local') ? '#10b981' : '#ef4444';
         }
 
--        logDebug("Car Aid Tracker v2.8 initialized.");
-+        logDebug("Car Aid Tracker v2.9.3 [Final Restoration] initialized.");
+        logDebug("Car Aid Tracker v2.9.5 [Local Edition] initialized.");
+
+        // --- DATA RECOVERY ENGINE (The Scavenger) ---
+        function runDataScavenger() {
+            logDebug("Scanning device for candidates from previous versions...");
+            const searchKeys = ['caraid_candidates', 'caraid_candidates_v1', 'interview_tracker_db', 'caraid_db'];
+            let recovered = 0;
+            
+            const currentData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            const currentIds = new Set(currentData.map(c => c.id || c.candidate_name + (c.phone || "")));
+            
+            searchKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && Array.isArray(data)) {
+                        data.forEach(item => {
+                            const uniqueId = item.id || item.candidate_name + (item.phone || "");
+                            if (!currentIds.has(uniqueId)) {
+                                item.id = item.id || Date.now().toString() + Math.random();
+                                currentData.push(item);
+                                currentIds.add(uniqueId);
+                                recovered++;
+                            }
+                        });
+                    }
+                } catch(e) {}
+            });
+            
+            if (recovered > 0) {
+                localStorage.setItem(DB_KEY, JSON.stringify(currentData));
+                logDebug(`[Success] Recovered ${recovered} candidates from phone history.`);
+                showToast(`SUCCESS: Recovered ${recovered} candidates! 🎉`);
+                renderList(currentData);
+            }
+        }
+        
+        // Auto-run scavenger on load
+        runDataScavenger();
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -613,17 +648,8 @@
             // Add fallback name and ID
             if (!data.candidate_name) data.candidate_name = "Walk-in / Unknown";
             data.timestamp = new Date().toISOString();
+            // Local-Only Save Logic
             try {
-                // Save to Cloud (Google Sheets)
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                // Also update local cache for instant feedback
                 const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
                 if (editingId) {
                     const idx = existing.findIndex(c => c.id === editingId);
@@ -637,7 +663,7 @@
                 }
                 localStorage.setItem(DB_KEY, JSON.stringify(existing));
 
-                showToast(editingId ? "Candidate updated in cloud! ✨" : "Candidate saved to cloud! ✅");
+                showToast(editingId ? "Changes saved locally! 💾" : "Candidate saved to phone! ✅");
                 form.reset();
                 document.getElementById('editing_id').value = "";
                 document.getElementById('raw-summary').value = "";
@@ -648,72 +674,21 @@
 
             } catch (err) {
                 console.error(err);
-                showToast("Error connecting to cloud.", "error");
+                showToast("Memory full or storage error.", "error");
             } finally {
                 submitBtn.disabled = false;
             }
         });
 
-        // --- HYPER-RELIABLE SYNC (v2.9) ---
+        // --- LOCAL LOADING (v2.9.5) ---
         function loadCandidates() {
             const list = document.getElementById('candidates-list');
-            const nwWarning = document.getElementById('nw-warning');
             
-            // 1. Show local cache immediately for speed
+            // Show local cache immediately
             const cached = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             renderList(cached);
-            logDebug(`[Cache] Loaded ${cached.length} records.`);
-
-            updateSyncUI('pending', 'Hyper-Syncing (v2.9)...');
-            
-            // 2. Prep JSONP with Cache-Busting
-            const t = Date.now();
-            const callbackName = 'hp_cb_' + t;
-            logDebug(`[Sync] Requesting Unique ID: ${t}`);
-
-            // Safety Timeout (10 seconds)
-            const syncTimeout = setTimeout(() => {
-                if (window[callbackName]) {
-                    logDebug("[Error] Sync Timeout: Network is blocked.");
-                    updateSyncUI('error', 'Sync Timed Out (Check VPN/Wi-Fi)');
-                    if (nwWarning) nwWarning.style.display = 'block';
-                    delete window[callbackName];
-                }
-            }, 10000);
-
-            window[callbackName] = function(cloudData) {
-                clearTimeout(syncTimeout);
-                
-                if (cloudData && cloudData.status === 'error') {
-                    logDebug(`[Error] Cloud Script Error: ${cloudData.message}`);
-                    updateSyncUI('error', 'Spreadsheet Link Error');
-                    showToast("Google Script Error: Check your link.", "error");
-                    return;
-                }
-
-                logDebug(`[Success] Synced ${cloudData.length || 0} records from Google.`);
-                if (nwWarning) nwWarning.style.display = 'none';
-                
-                localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
-                renderList(cloudData);
-                updateSyncUI('ok', 'Connected & Synced (Hyper-Sync)');
-                
-                delete window[callbackName];
-                const oldScript = document.getElementById(callbackName);
-                if (oldScript) oldScript.remove();
-            };
-
-            // 3. Inject "Stealth" Script with Cache-Busting
-            const script = document.createElement('script');
-            script.id = callbackName;
-            script.src = `${SCRIPT_URL}?callback=${callbackName}&t=${t}&r=${Math.random()}`;
-            script.onerror = () => {
-                clearTimeout(syncTimeout);
-                logDebug("[Error] Network Block: Connection Cut.");
-                updateSyncUI('error', 'Sync Blocked (Try LTE/Data)');
-                if (nwWarning) nwWarning.style.display = 'block';
-            };
-            document.body.appendChild(script);
+            logDebug(`[Local] Loaded ${cached.length} records from phone memory.`);
+            updateSyncUI('local', `Storage: ${cached.length} records`);
         }
 
         function renderList(data) {
