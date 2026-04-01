@@ -286,15 +286,20 @@
         }
 
         .cand-full-name { font-size: 19px; font-weight: 800; color: white; }
-        .cand-header-badge { 
-            font-size: 9px; 
+        .cand-header-badge { display: none; } /* Replaced by dynamic role badges below */
+
+        .role-badge { 
+            font-size: 10px; 
             font-weight: 800; 
-            color: var(--accent-blue); 
             text-transform: uppercase; 
-            background: var(--accent-blue-glow);
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
+        .role-advisor { background: #f59e0b; color: white; } /* Vivid Orange */
+        .role-tech { background: #3b82f6; color: white; } /* Vivid Blue */
+        .role-other { background: var(--border-color); color: var(--text-dim); }
 
         .cand-grid {
             display: grid;
@@ -653,11 +658,15 @@
                 return;
             }
 
-            container.innerHTML = data.map(c => `
+            container.innerHTML = data.map(c => {
+                const roleClass = c.role.toLowerCase().includes('advisor') ? 'role-advisor' : 
+                                 (c.role.toLowerCase().includes('tech') ? 'role-tech' : 'role-other');
+
+                return `
                 <div class="candidate-card">
                     <div class="cand-name-row">
                         <div class="cand-full-name">${c.first_name} ${c.last_name}</div>
-                        <div class="cand-header-badge">${c.role}</div>
+                        <div class="role-badge ${roleClass}">${c.role}</div>
                     </div>
                     <div class="cand-grid">
                         <div class="grid-item">📞 <span>${c.mobile}</span></div>
