@@ -285,8 +285,9 @@
                         <div style="grid-column: span 2;">🛠️ <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE WITH OWNER</button>
+                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
                         <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>
+                        <button class="action-btn" style="background:rgba(248,113,113,0.1); color:#f87171; border:1px solid rgba(248,113,113,0.2); flex:1;" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>
                     </div>
                 </div>`;
             }).join('');
@@ -304,9 +305,17 @@
             if (!c) return;
             document.getElementById('edit-id').value = c.id;
             ['first_name','last_name','mobile','shop','role','exp','cur_shop','alc_status','ro_size','email','date','notes'].forEach(k => {
-                document.getElementById(k).value = c[k];
+                document.getElementById(k).value = c[k] || '';
             });
             showView('log'); window.scrollTo(0,0);
+        }
+
+        function deleteCandidate(id) {
+            if (!confirm("Delete this candidate? This cannot be undone.")) return;
+            const db = getDB().filter(c => c.id !== id);
+            saveDB(db);
+            renderList();
+            showToast("Candidate Deleted 🗑️");
         }
 
         function showView(v) {
