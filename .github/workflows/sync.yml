@@ -1,0 +1,23 @@
+name: Cloud Sheet Sync Relay
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Run every 5 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Fetch Latest Candidates
+        run: |
+          curl -L "https://script.google.com/macros/s/AKfycbycB1w3lV_qpVTfOAXwaB49d79X82s1AVqdIc7delAfgU3ixl3PhpChefKzTiN1DHTL4w/exec" -o candidates.json
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Car Aid Sync Bot"
+          git config --global user.email "sync@caraid.com"
+          git add candidates.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Relay Update: Synced candidates from Google Cloud [$(date)]" && git push)

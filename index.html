@@ -318,13 +318,13 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v3.0</small></h1>
-            <p class="subtitle">Ultra-Sync Recruiting Dashboard</p>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v4.0</small></h1>
+            <p class="subtitle">Unblockable Relay Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
                 ☁️ Sync Status: <span id="status-text">Connecting...</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Ultra-Sync v3.0)
+                🔄 Force Hard Reload (Relay Sync v4.0)
             </button>
             <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
                 ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
@@ -484,7 +484,7 @@
         }
 
 -        logDebug("Car Aid Tracker v2.8 initialized.");
-+        logDebug("Car Aid Tracker v3.0 [Ultra-Sync Proxy] initialized.");
++        logDebug("Car Aid Tracker v4.0 [GitHub Relay] initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -648,8 +648,8 @@
             }
         });
 
-        // --- ULTRA-SYNC v3.0 (PROXY BYPASS) ---
-        function loadCandidates() {
+        // --- UNBLOCKABLE RELAY v4.0 (GITHUB BYPASS) ---
+        async function loadCandidates() {
             const list = document.getElementById('candidates-list');
             const nwWarning = document.getElementById('nw-warning');
             
@@ -658,50 +658,44 @@
             renderList(cached);
             logDebug(`[Cache] Loaded ${cached.length} records.`);
 
-            updateSyncUI('pending', 'Ultra-Syncing (v3.0)...');
+            updateSyncUI('pending', 'GitHub Relay Sync (v4.0)...');
             
-            // 2. Prep Proxy Handshake
-            const t = Date.now();
-            const callbackName = 'ultra_cb_' + t;
-            logDebug(`[Sync] Initiating Proxy Bridge: ${t}`);
-
-            // Safety Timeout (12 seconds)
-            const syncTimeout = setTimeout(() => {
-                if (window[callbackName]) {
-                    logDebug("[Error] Sync Timeout: Firewalled.");
-                    updateSyncUI('error', 'Sync Timed Out (Proxy Offline)');
-                    if (nwWarning) nwWarning.style.display = 'block';
-                    delete window[callbackName];
-                }
-            }, 12000);
-
-            window[callbackName] = function(cloudData) {
-                clearTimeout(syncTimeout);
-                logDebug(`[Success] Bridge OK: Synced ${cloudData.length} records.`);
+            try {
+                // Fetch the JSON file that GitHub Action generates
+                // We add a timestamp to bypass GitHub Pages cache
+                const response = await fetch(`candidates.json?t=${Date.now()}`);
+                
+                if (!response.ok) throw new Error('Relay file not ready yet.');
+                
+                const cloudData = await response.json();
+                
+                logDebug(`[Success] Relay OK: Synced ${cloudData.length} records.`);
                 if (nwWarning) nwWarning.style.display = 'none';
                 
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
                 renderList(cloudData);
-                updateSyncUI('ok', 'Connected (Ultra-Sync Proxy)');
+                updateSyncUI('ok', 'Connected (GitHub Relay)');
                 
-                delete window[callbackName];
-                const oldScript = document.getElementById(callbackName);
-                if (oldScript) oldScript.remove();
-            };
+            } catch (err) {
+                logDebug(`[Relay] Fetching secondary backup...`);
+                // Fallback to direct proxy if relay file is missing
+                loadCandidatesFallback();
+            }
+        }
 
-            // 3. Inject "Bridge" Script via AllOrigins Proxy
-            const script = document.createElement('script');
-            script.id = callbackName;
-            // Using allorigins proxy to bypass firewall detection of script.google.com
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(SCRIPT_URL + '?callback=' + callbackName + '&t=' + t)}&callback=${callbackName}`;
-            
-            script.src = proxyUrl;
-            script.onerror = () => {
-                clearTimeout(syncTimeout);
-                logDebug("[Error] Bridge Failure.");
-                updateSyncUI('error', 'Bridge Blocked');
-                if (nwWarning) nwWarning.style.display = 'block';
+        // Fallback to v3.0 Proxy if Relay file hasn't been generated yet
+        function loadCandidatesFallback() {
+            const callbackName = 'fallback_cb_' + Date.now();
+            window[callbackName] = function(cloudData) {
+                logDebug(`[Success] Backup Bridge OK.`);
+                localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
+                renderList(cloudData);
+                updateSyncUI('ok', 'Connected (Backup Relay)');
+                delete window[callbackName];
             };
+            const script = document.createElement('script');
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(SCRIPT_URL + '?callback=' + callbackName)}&callback=${callbackName}`;
+            script.src = proxyUrl;
             document.body.appendChild(script);
         }
 
