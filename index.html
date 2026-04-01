@@ -197,9 +197,20 @@
             let found = 0;
             const textLower = text.toLowerCase();
 
-            // 1. ROLES
-            if (textLower.includes('advisor') || textLower.includes('adcisor')) { if (setField('role', 'Service Advisor')) found++; }
-            else if (textLower.includes('tech') || textLower.includes('level')) { if (setField('role', 'A-Level Technician')) found++; }
+            // 1. ROLES & LOCATIONS
+            if (textLower.includes('service advisor') || textLower.includes('advisor')) { 
+                if (setField('role', 'Service Advisor')) found++; 
+            } else if (textLower.includes('a-level technician') || textLower.includes('technician') || textLower.includes('tech')) { 
+                if (setField('role', 'A-Level Technician')) found++; 
+            }
+
+            const locs = ['southfield', 'waterford', 'troy', 'shelby township', 'utica'];
+            for (const l of locs) {
+                if (textLower.includes(l)) {
+                    const formatted = l.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    if (setField('shop', formatted)) { found++; break; }
+                }
+            }
 
             // 2. KEYWORDS
             const map = [
@@ -283,6 +294,7 @@
                         <div>🏢 <b>${c.cur_shop || 'N/A'}</b></div>
                         <div>🏆 <b>${c.exp || 'N/A'}</b></div>
                         <div style="grid-column: span 2;">🛠️ <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
+                        <div style="grid-column: span 2;">✉️ <b>${c.email || 'N/A'}</b></div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
                         <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
