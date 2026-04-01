@@ -318,13 +318,13 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v4.0.2</small></h1>
-            <p class="subtitle">Unblockable Relay Dashboard</p>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.2 (Stable)</small></h1>
+            <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                ☁️ Sync Status: <span id="status-text">Connecting...</span>
+                ☁️ Sync Status: <span id="status-text">Connected (v2.9.2)</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Relay Sync v4.0.2)
+                🔄 Force Hard Reload (Restored Stable v2.9)
             </button>
             <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
                 ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
@@ -419,6 +419,11 @@
 
         <!-- Candidate Viewing Section -->
         <div id="view-candidates-section">
+            <div style="margin-bottom: 16px; display: flex; justify-content: flex-end;">
+                <button onclick="downloadCSV()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); color: var(--success-green); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    📥 Download Candidates (CSV)
+                </button>
+            </div>
             <div id="candidates-list">
                 <p style="text-align: center; color: var(--text-dim); padding: 40px 0;">Loading candidates...</p>
             </div>
@@ -433,8 +438,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaC1bX0BPlLrPrwaVg29mk7A70vGaGtRgncAyLzCWWoB3Ku2hRxVZUxXXjXC2o27IFwQ/exec';
- 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaC1bX0BPlLrPrwaVg29mk7A70vGaGtRgncAyLzCWWoB3Ku2hRxVZUxXXjXC2o27IFwQ/exec'; 
         const DB_KEY = 'caraid_candidates_v1';
 
         // --- UI LOGIC ---
@@ -485,7 +489,7 @@
         }
 
 -        logDebug("Car Aid Tracker v2.8 initialized.");
-+        logDebug("Car Aid Tracker v4.0.1 [GitHub Relay] initialized.");
++        logDebug("Car Aid Tracker v2.9.2 [Restored Stable] initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -649,8 +653,8 @@
             }
         });
 
-        // --- UNBLOCKABLE RELAY v4.0 (GITHUB BYPASS) ---
-        async function loadCandidates() {
+        // --- HYPER-RELIABLE SYNC (v2.9) ---
+        function loadCandidates() {
             const list = document.getElementById('candidates-list');
             const nwWarning = document.getElementById('nw-warning');
             
@@ -659,44 +663,47 @@
             renderList(cached);
             logDebug(`[Cache] Loaded ${cached.length} records.`);
 
-            updateSyncUI('pending', 'GitHub Relay Sync (v4.0)...');
+            updateSyncUI('pending', 'Hyper-Syncing (v2.9)...');
             
-            try {
-                // Fetch the JSON file that GitHub Action generates
-                // We add a timestamp to bypass GitHub Pages cache
-                const response = await fetch(`candidates.json?t=${Date.now()}`);
-                
-                if (!response.ok) throw new Error('Relay file not ready yet.');
-                
-                const cloudData = await response.json();
-                
-                logDebug(`[Success] Relay OK: Synced ${cloudData.length} records.`);
+            // 2. Prep JSONP with Cache-Busting
+            const t = Date.now();
+            const callbackName = 'hp_cb_' + t;
+            logDebug(`[Sync] Requesting Unique ID: ${t}`);
+
+            // Safety Timeout (10 seconds)
+            const syncTimeout = setTimeout(() => {
+                if (window[callbackName]) {
+                    logDebug("[Error] Sync Timeout: Network is blocked.");
+                    updateSyncUI('error', 'Sync Timed Out (Check VPN/Wi-Fi)');
+                    if (nwWarning) nwWarning.style.display = 'block';
+                    delete window[callbackName];
+                }
+            }, 10000);
+
+            window[callbackName] = function(cloudData) {
+                clearTimeout(syncTimeout);
+                logDebug(`[Success] Synced ${cloudData.length} records from Google.`);
                 if (nwWarning) nwWarning.style.display = 'none';
                 
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
                 renderList(cloudData);
-                updateSyncUI('ok', 'Connected (GitHub Relay)');
+                updateSyncUI('ok', 'Connected & Synced (Hyper-Sync)');
                 
-            } catch (err) {
-                logDebug(`[Relay] Fetching secondary backup...`);
-                // Fallback to direct proxy if relay file is missing
-                loadCandidatesFallback();
-            }
-        }
-
-        // Fallback to v3.0 Proxy if Relay file hasn't been generated yet
-        function loadCandidatesFallback() {
-            const callbackName = 'fallback_cb_' + Date.now();
-            window[callbackName] = function(cloudData) {
-                logDebug(`[Success] Backup Bridge OK.`);
-                localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
-                renderList(cloudData);
-                updateSyncUI('ok', 'Connected (Backup Relay)');
                 delete window[callbackName];
+                const oldScript = document.getElementById(callbackName);
+                if (oldScript) oldScript.remove();
             };
+
+            // 3. Inject "Stealth" Script with Cache-Busting
             const script = document.createElement('script');
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(SCRIPT_URL + '?callback=' + callbackName)}&callback=${callbackName}`;
-            script.src = proxyUrl;
+            script.id = callbackName;
+            script.src = `${SCRIPT_URL}?callback=${callbackName}&t=${t}&r=${Math.random()}`;
+            script.onerror = () => {
+                clearTimeout(syncTimeout);
+                logDebug("[Error] Network Block: Connection Cut.");
+                updateSyncUI('error', 'Sync Blocked (Try LTE/Data)');
+                if (nwWarning) nwWarning.style.display = 'block';
+            };
             document.body.appendChild(script);
         }
 
@@ -774,6 +781,57 @@
                 loadCandidates();
                 showToast("Record deleted.");
             }
+        }
+
+        // --- EXPORT LOGIC ---
+        function downloadCSV() {
+            const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+            if (data.length === 0) {
+                showToast("No data to download!", "error");
+                return;
+            }
+
+            // Define headers
+            const headers = [
+                "Timestamp", "Name", "Role", "Phone", "Email", 
+                "Interview Date", "Location", "Years Exp", "Shop", "Pay Range", "Notes"
+            ];
+
+            // Convert data to CSV format
+            const csvRows = [];
+            csvRows.push(headers.join(","));
+
+            data.forEach(c => {
+                const row = [
+                    c.timestamp || "",
+                    `"${(c.candidate_name || "").replace(/"/g, '""')}"`,
+                    `"${(c.role || "").replace(/"/g, '""')}"`,
+                    `"${(c.phone || "").replace(/"/g, '""')}"`,
+                    `"${(c.email || "").replace(/"/g, '""')}"`,
+                    c.interview_date || "",
+                    `"${(c.location || "").replace(/"/g, '""')}"`,
+                    `"${(c.years_experience || "").replace(/"/g, '""')}"`,
+                    `"${(c.current_shop || "").replace(/"/g, '""')}"`,
+                    `"${(c.pay_range || "").replace(/"/g, '""')}"`,
+                    `"${(c.notes || "").replace(/"/g, '""')}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+
+            const csvString = csvRows.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.setAttribute("href", url);
+            link.setAttribute("download", `caraid_candidates_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("CSV Downloaded! ✅");
         }
     </script>
 </body>
