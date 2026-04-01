@@ -291,10 +291,9 @@
                     <div class="cand-grid">
                         <div>📞 <b>${c.mobile}</b></div>
                         <div>📍 <b>${c.shop}</b></div>
-                        <div>🏢 <b>${c.cur_shop || 'N/A'}</b></div>
                         <div>🏆 <b>${c.exp || 'N/A'}</b></div>
-                        <div style="grid-column: span 2;">🛠️ <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
-                        <div style="grid-column: span 2;">✉️ <b>${c.email || 'N/A'}</b></div>
+                        <div>✉️ <b>${c.email || 'N/A'}</b></div>
+                        <div style="grid-column: span 2;"><span style="font-size:9px; font-weight:900; background:white; color:black; padding:2px 5px; border-radius:4px; margin-right:5px; vertical-align:middle;">ASE</span> <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:15px;">
                         <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
