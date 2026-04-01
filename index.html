@@ -380,7 +380,7 @@
                 <div class="logo-container">
                     <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
                 </div>
-                <h1>Interview Tracker <span class="version-badge">v3.1.0 [Upgrade]</span></h1>
+                <h1>Interview Tracker <span class="version-badge">v3.1.2 [Fix]</span></h1>
                 <p class="subtitle">Professional Recruiting Dashboard</p>
             </header>
 
@@ -403,56 +403,56 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>First Name <span class="required-star">*</span></label>
-                            <input type="text" id="first_name" placeholder="John" required>
+                            <input type="text" id="first_name" placeholder="First Name" required>
                         </div>
                         <div class="form-group">
                             <label>Last Name <span class="required-star">*</span></label>
-                            <input type="text" id="last_name" placeholder="Doe" required>
+                            <input type="text" id="last_name" placeholder="Last Name" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Phone Number <span class="required-star">*</span></label>
-                            <input type="tel" id="mobile" placeholder="313-555-0000" required>
+                            <input type="tel" id="mobile" placeholder="Phone" required>
                         </div>
                         <div class="form-group">
                             <label>Shop Location <span class="required-star">*</span></label>
-                            <input type="text" id="shop" placeholder="Southfield, Waterford..." required>
+                            <input type="text" id="shop" placeholder="Location" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Candidate Role <span class="required-star">*</span></label>
-                        <input type="text" id="role" placeholder="A-Level Technician, Advisor..." required>
+                        <input type="text" id="role" placeholder="Role (Advisor/Tech)" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Years Experience</label>
-                            <input type="text" id="exp" placeholder="10+ years">
+                            <input type="text" id="exp" placeholder="e.g. 5+ years">
                         </div>
                         <div class="form-group">
                             <label>Current Shop</label>
-                            <input type="text" id="cur_shop" placeholder="Inc Technology">
+                            <input type="text" id="cur_shop" placeholder="Current location">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>ALC / ASE Status</label>
-                            <input type="text" id="alc_status" placeholder="Working toward cert">
+                            <input type="text" id="alc_status" placeholder="Certs/Status">
                         </div>
                         <div class="form-group">
                             <label>Avg RO Size</label>
-                            <input type="text" id="ro_size" placeholder="$1,200+">
+                            <input type="text" id="ro_size" placeholder="Averages">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Email Address</label>
-                            <input type="email" id="email" placeholder="clarence@gmail.com">
+                            <input type="email" id="email" placeholder="email@domain.com">
                         </div>
                         <div class="form-group">
                             <label>Interview Date</label>
@@ -462,7 +462,7 @@
 
                     <div class="form-group">
                         <label>Additional Notes</label>
-                        <textarea id="notes" rows="2" placeholder="Start date, specialty, etc."></textarea>
+                        <textarea id="notes" rows="2" placeholder="Specialty, start date..."></textarea>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submit-btn">
@@ -481,7 +481,7 @@
             </div>
 
             <footer style="text-align:center; margin-top:30px; font-size:11px; color:var(--text-dim); opacity: 0.6;">
-                Car Aid Automated Recruiting System v3.1.0<br>
+                Car Aid Automated Recruiting System v3.1.2<br>
                 Secure Local Storage Active
             </footer>
         </div>
@@ -499,7 +499,7 @@
             localStorage.setItem(DB_NAME, JSON.stringify(data));
         }
 
-        // --- MASTER SCAVENGER (v3.1 aware) ---
+        // --- MASTER SCAVENGER ---
         function runScavenger() {
             let recovered = 0;
             const current = getDB();
@@ -511,7 +511,6 @@
                     if (data && Array.isArray(data)) {
                         data.forEach(item => {
                             if (!currentIds.has(item.id)) {
-                                // Map old name to first/last if needed
                                 let fName = item.first_name || item.name || item.candidate_name || "Unknown";
                                 let lName = item.last_name || "";
                                 if (!item.first_name && (item.name || item.candidate_name)) {
@@ -546,47 +545,50 @@
 
             if (recovered > 0) {
                 saveToDB(current);
-                showToast(`SUCCESS: Recovered ${recovered} Candidates! 🎉`);
                 renderList();
             }
         }
 
-        // --- SMART PARSE 2.0 (Label-Specific) ---
+        // --- SMART PARSE 2.0 (REPAIRED & LENIENT) ---
         function runSmartParse() {
             const text = document.getElementById('raw-text').value;
             if (!text.trim()) return showToast("Paste summary first!", "error");
 
             let found = 0;
-            const textLines = text.split('\n');
+            const textLower = text.toLowerCase();
 
             const mappings = {
                 first_name: /(?:First Name):\s*([^\n\r]+)/i,
                 last_name: /(?:Last Name):\s*([^\n\r]+)/i,
                 mobile: /(?:Phone Number|Phone):\s*([^\n\r]+)/i,
                 email: /(?:Email Address|Email):\s*([^\n\r]+)/i,
-                shop: /(?:Shop Location):\s*([^\n\r]+)/i,
-                exp: /(?:Years Experience):\s*([^\n\r]+)/i,
+                shop: /(?:Shop Location|Shop):\s*([^\n\r]+)/i,
+                exp: /(?:Years Experience|Exp):\s*([^\n\r]+)/i,
                 cur_shop: /(?:Current Shop):\s*([^\n\r]+)/i,
                 alc_status: /(?:ALC Status|ASE Status):\s*([^\n\r]+)/i,
-                ro_size: /(?:Average RO Size):\s*([^\n\r]+)/i
+                ro_size: /(?:Average RO Size|RO Size):\s*([^\n\r]+)/i
             };
 
-            // Heuristic Role (First line or major keyword)
-            const roleMatch = text.match(/(?:A-Level Technician|Service Advisor)/i);
-            if (roleMatch && setField('role', roleMatch[0])) found++;
+            // Improved Role Detection (Handles 'A_Level', 'Adcisor', etc.)
+            if (textLower.includes('advisor') || textLower.includes('adcisor')) {
+                if (setField('role', 'Service Advisor')) found++;
+            } else if (textLower.includes('tech')) {
+                if (setField('role', 'A-Level Technician')) found++;
+            }
 
             for (const [id, regex] of Object.entries(mappings)) {
                 const match = text.match(regex);
                 if (match && setField(id, match[1])) found++;
             }
 
-            // Fallback for phone if no label
+            // Fallback for phone if no label matched
             if (!document.getElementById('mobile').value) {
                 const genericPhone = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
                 if (genericPhone && setField('mobile', genericPhone[0])) found++;
             }
 
-            if (found > 0) showToast(`✨ Magic Fill: Found ${found} details!`);
+            if (found > 0) showToast(`✨ Magic Fill: Populated ${found} fields!`);
+            else showToast("Could not extract info. Check labels.", "error");
         }
 
         // --- UI CORE ---
@@ -639,7 +641,7 @@
             else data.unshift(candidate);
 
             saveToDB(data);
-            showToast("Success! Candidate Saved Locally ✅");
+            showToast("Success! Candidate Saved ✅");
             
             this.reset();
             document.getElementById('edit-id').value = "";
@@ -698,12 +700,11 @@
 - EMAIL: ${c.email || 'N/A'}
 - EXPERIENCE: ${c.exp}
 - CURRENT SHOP: ${c.cur_shop}
-- ALC/ASE STATUS: ${c.alc_status}
+- ASE/ALC STATUS: ${c.alc_status}
 - AVG RO SIZE: ${c.ro_size}
-- INT DATE: ${c.date}
+- DATE: ${c.date}
 
-NOTES:
-${c.notes || 'None provided.'}`;
+NOTES: ${c.notes || 'None.'}`;
 
             navigator.clipboard.writeText(brief).then(() => {
                 showToast("Summary copied to clipboard! 📋");
@@ -745,28 +746,21 @@ ${c.notes || 'None provided.'}`;
             const data = getDB();
             if (data.length === 0) return showToast("Nothing to export");
 
-            const headers = ["First Name", "Last Name", "Phone", "Location", "Role", "Exp", "Current Shop", "ASE/ALC", "Avg RO", "Email", "Date"];
+            const headers = ["First", "Last", "Phone", "Location", "Role", "Exp", "Current Shop", "ALC Status", "Avg RO", "Email", "Date"];
             const csv = [headers.join(",")];
-
             data.forEach(c => {
-                const row = [
-                    `"${c.first_name}"`, `"${c.last_name}"`, `"${c.mobile}"`, `"${c.shop}"`,
-                    `"${c.role}"`, `"${c.exp}"`, `"${c.cur_shop}"`, `"${c.alc_status}"`,
-                    `"${c.ro_size}"`, `"${c.email}"`, c.date
-                ];
+                const row = [`"${c.first_name}"`,`"${c.last_name}"`,`"${c.mobile}"`,`"${c.shop}"`,`"${c.role}"`,`"${c.exp}"`,`"${c.cur_shop}"`,`"${c.alc_status}"`,`"${c.ro_size}"`,`"${c.email}"`,c.date];
                 csv.push(row.join(","));
             });
-
             const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `caraid_full_export_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `caraid_export.csv`;
             a.click();
-            showToast("CSV Downloaded!");
         }
 
-        // START
+        // INIT
         document.getElementById('date').valueAsDate = new Date();
         runScavenger();
         renderList();
