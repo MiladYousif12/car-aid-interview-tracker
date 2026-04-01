@@ -318,13 +318,14 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.2 (Stable)</small></h1>
+-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.8</small></h1>
++            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.3 (Stable Restoration)</small></h1>
             <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                ☁️ Sync Status: <span id="status-text">Connected (v2.9.2)</span>
+                ☁️ Sync Status: <span id="status-text">Restored stable (v2.9)</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Restored Stable v2.9)
+                🔄 Force Hard Reload (Final Stable v2.9)
             </button>
             <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
                 ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
@@ -488,44 +489,8 @@
             statusText.style.color = status === 'ok' ? '#10b981' : '#ef4444';
         }
 
-        logDebug("Car Aid Tracker v2.9.2 [Stable Restoration] initialized.");
-        
-        // --- DATA RECOVERY ENGINE (Emergency Tool) ---
-        function runDataRecovery() {
-            logDebug("Scanning storage for lost candidates...");
-            const oldKeys = ['caraid_candidates', 'interview_tracker_db', 'caraid_candidates_v1_backup'];
-            let recoveredCount = 0;
-            
-            const currentData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            const currentIds = new Set(currentData.map(c => c.id));
-            
-            oldKeys.forEach(key => {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data && Array.isArray(data)) {
-                        data.forEach(item => {
-                            if (!currentIds.has(item.id)) {
-                                currentData.push(item);
-                                currentIds.add(item.id);
-                                recoveredCount++;
-                            }
-                        });
-                    }
-                } catch(e) {}
-            });
-            
-            if (recoveredCount > 0) {
-                localStorage.setItem(DB_KEY, JSON.stringify(currentData));
-                logDebug(`[Success] Restored ${recoveredCount} records from device history.`);
-                showToast(`Data Recovery: Found ${recoveredCount} candidates!`);
-                renderList(currentData);
-            } else {
-                logDebug("No local data found in older keys.");
-            }
-        }
-        
-        // Run migration automatically on load
-        runDataRecovery();
+-        logDebug("Car Aid Tracker v2.8 initialized.");
++        logDebug("Car Aid Tracker v2.9.3 [Final Restoration] initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
