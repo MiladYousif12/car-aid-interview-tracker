@@ -18,7 +18,7 @@
             --border-color: #30363d;
             --input-bg: #0d1117;
             --error-red: #f87171;
-            --glass-bg: rgba(22, 27, 34, 0.9);
+            --glass-bg: rgba(22, 27, 34, 0.95);
         }
 
         * {
@@ -54,8 +54,8 @@
         }
 
         header { text-align: center; margin-bottom: 24px; }
-        .logo-img { max-width: 140px; height: auto; margin-bottom: 12px; }
-        h1 { font-family: 'Outfit', sans-serif; font-size: 26px; letter-spacing: -0.5px; }
+        .logo-img { max-width: 130px; height: auto; margin-bottom: 12px; }
+        h1 { font-family: 'Outfit', sans-serif; font-size: 24px; letter-spacing: -0.5px; }
         .version-badge { font-size: 10px; background: #238636; color: white; padding: 2px 10px; border-radius: 50px; margin-left: 8px; vertical-align: middle; }
 
         .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 18px; margin-bottom: 24px; border: 1px solid var(--border-color); }
@@ -71,30 +71,53 @@
             margin-bottom: 24px;
         }
         .box-header { font-size: 12px; font-weight: 800; color: var(--accent-green); margin-bottom: 12px; text-transform: uppercase; }
-        .parse-textarea { width: 100%; height: 110px; background: #000; border: 1px solid var(--border-color); border-radius: 14px; color: white; padding: 14px; font-size: 15px; resize: none; }
+        .parse-textarea { width: 100%; height: 110px; background: #000; border: 1px solid var(--border-color); border-radius: 14px; color: white; padding: 14px; font-size: 15px; resize: none; outline: none; }
         .magic-btn { width: 100%; background: var(--accent-green); color: white; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 12px; cursor: pointer; }
 
         /* Form */
         .form-row { display: flex; gap: 12px; }
         .form-group { margin-bottom: 18px; flex: 1; }
         label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--text-dim); text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 15px; color: white; font-size: 16px; outline: none; }
+        input, select, textarea { width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 15px; color: white; font-size: 16px; outline: none; transition: 0.2s; }
         input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(37,99,235,0.2); }
-        .submit-btn { width: 100%; background: white; color: black; border: none; border-radius: 16px; padding: 18px; font-size: 16px; font-weight: 900; margin-top: 10px; text-transform: uppercase; }
+        .submit-btn { width: 100%; background: white; color: black; border: none; border-radius: 16px; padding: 18px; font-size: 16px; font-weight: 900; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* List */
-        .candidate-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 24px; padding: 20px; margin-bottom: 20px; position: relative; }
-        .candidate-card::before { content: ''; position: absolute; left: 0; top: 20px; bottom: 20px; width: 4px; background: var(--accent-blue); border-radius: 0 4px 4px 0; }
-        .cand-name-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .role-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 5px 12px; border-radius: 10px; }
+        /* Candidate List Cleaner UI */
+        .candidate-card { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid var(--border-color); 
+            border-radius: 24px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            position: relative;
+            overflow: hidden;
+        }
+        .candidate-card::before { 
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent-blue); 
+        }
+
+        .cand-name-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 15px; }
+        .cand-full-name { font-weight: 800; font-size: 19px; line-height: 1.2; flex: 1; min-width: 0; word-wrap: break-word; color: white; }
+        
+        .role-badge { 
+            font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; flex-shrink: 0; white-space: nowrap; margin-top: 2px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
         .role-advisor { background: #f59e0b; color: white; }
         .role-tech { background: #a3e635; color: black; }
-        .cand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; font-size: 13px; color: var(--text-dim); }
-        .cand-grid b { color: white; }
 
-        .action-btn { padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 11px; text-transform: uppercase; }
-        .btn-copy { background: var(--accent-orange); color: white; flex: 2; }
-        .btn-edit { background: rgba(255,255,255,0.05); color: white; flex: 1; border: 1px solid var(--border-color); }
+        .cand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 15px; font-size: 13px; color: var(--text-dim); }
+        .grid-item { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+        .grid-row-full { grid-column: span 2; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+        .grid-item b, .grid-row-full b { color: white; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .ase-img { height: 20px; width: auto; vertical-align: middle; border-radius: 2px; flex-shrink: 0; }
+        
+        .cand-actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
+        .action-btn { padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 11px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-copy { background: var(--accent-orange); color: white; flex: 2; height: 48px; }
+        .btn-edit { background: rgba(255,255,255,0.05); color: white; flex: 1; border: 1px solid var(--border-color); height: 48px; }
+        .btn-del { background: rgba(248,113,113,0.05); color: #f87171; border: 1px solid rgba(248,113,113,0.2); flex: 1; height: 48px; }
 
         #toast {
             position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
@@ -115,8 +138,8 @@
         <div class="card">
             <header>
                 <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
-                <h1>Recruiting Pro <span class="version-badge">v3.1.9</span></h1>
-                <button onclick="location.reload(true)" style="background:rgba(255,255,255,0.05); color:var(--text-dim); border:1px solid var(--border-color); padding:4px 10px; border-radius:8px; font-size:10px; font-weight:800; margin-top:8px; cursor:pointer;">🔄 Force Hard Reload</button>
+                <h1>Recruiting Pro <span class="version-badge">v3.2.0</span></h1>
+                <button onclick="location.reload(true)" style="background:rgba(255,255,255,0.05); color:var(--text-dim); border:1px solid var(--border-color); padding:6px 12px; border-radius:10px; font-size:11px; font-weight:800; margin-top:10px; cursor:pointer;">🔄 Force Hard Reload</button>
             </header>
 
             <div class="tabs">
@@ -160,9 +183,9 @@
             </div>
 
             <div id="view-list" style="display:none;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                    <div style="font-weight:800; font-size:14px;">Total: <span id="db-count">0</span></div>
-                    <button onclick="downloadCSV()" style="background:transparent; color:var(--accent-green); border:1px solid; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">DOWNLOAD CSV</button>
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+                    <div style="font-weight:800; font-size:14px; color:var(--text-dim);">Total: <span id="db-count" style="color:white;">0</span></div>
+                    <button onclick="downloadCSV()" style="background:transparent; color:var(--accent-green); border:1px solid; padding:6px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;">📥 DOWNLOAD CSV</button>
                 </div>
                 <div id="candidate-container"></div>
             </div>
@@ -273,7 +296,7 @@
             showToast("CANDIDATE SAVED! ✅");
             this.reset(); document.getElementById('edit-id').value = "";
             document.getElementById('date').valueAsDate = new Date();
-            setTimeout(() => showView('list'), 500);
+            setTimeout(() => showView('list'), 400);
         };
 
         function renderList() {
@@ -282,24 +305,27 @@
             document.getElementById('db-count').innerText = data.length;
             if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; opacity:0.3;">Empty</div>'; return; }
             container.innerHTML = data.map(c => {
-                const isAdv = c.role.toLowerCase().includes('advisor');
+                const isAdv = c.role && c.role.toLowerCase().includes('advisor');
                 return `
                 <div class="candidate-card">
                     <div class="cand-name-row">
-                        <div style="font-weight:800; font-size:18px;">${c.first_name} ${c.last_name}</div>
-                        <div class="role-badge ${isAdv ? 'role-advisor' : 'role-tech'}">${c.role}</div>
+                        <div class="cand-full-name">${c.first_name || ''} ${c.last_name || ''}</div>
+                        <div class="role-badge ${isAdv ? 'role-advisor' : 'role-tech'}">${c.role || 'ROLE'}</div>
                     </div>
                     <div class="cand-grid">
-                        <div>📞 <b>${c.mobile}</b></div>
-                        <div>📍 <b>${c.shop}</b></div>
-                        <div>🏆 <b>${c.exp || 'N/A'}</b></div>
-                        <div>✉️ <b>${c.email || 'N/A'}</b></div>
-                        <div style="grid-column: span 2;"><span style="font-size:9px; font-weight:900; background:white; color:black; padding:2px 5px; border-radius:4px; margin-right:5px; vertical-align:middle;">ASE</span> <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
+                        <div class="grid-item">📞 <b>${c.mobile || 'N/A'}</b></div>
+                        <div class="grid-item">📍 <b>${c.shop || 'N/A'}</b></div>
+                        <div class="grid-item">🏆 <b>${c.exp || 'N/A'}</b></div>
+                        <div class="grid-row-full">✉️ <b>${c.email || 'N/A'}</b></div>
+                        <div class="grid-row-full" style="margin-top:2px;">
+                            <img src="ase_badge.png" class="ase-img" onerror="this.style.display='none'"> 
+                            <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b>
+                        </div>
                     </div>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
+                    <div class="cand-actions">
                         <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
                         <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>
-                        <button class="action-btn" style="background:rgba(248,113,113,0.1); color:#f87171; border:1px solid rgba(248,113,113,0.2); flex:1;" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>
+                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>
                     </div>
                 </div>`;
             }).join('');
@@ -308,7 +334,7 @@
         function copyBrief(id) {
             const c = getDB().find(item => item.id === id);
             if (!c) return;
-            const b = `CANDIDATE: ${c.first_name} ${c.last_name}\nROLE: ${c.role}\nLOCATION: ${c.shop}\nPHONE: ${c.mobile}\nEXP: ${c.exp}\nSHOP: ${c.cur_shop}\nASE: ${c.alc_status}\nAVG RO: ${c.ro_size}\nDATE: ${c.date}\nNOTES: ${c.notes}`;
+            const b = `CANDIDATE: ${c.first_name} ${c.last_name}\nROLE: ${c.role}\nLOCATION: ${c.shop}\nPHONE: ${c.mobile}\nEXP: ${c.exp}\nASE: ${c.alc_status}\nAVG RO: ${c.ro_size}\nDATE: ${c.date}\nNOTES: ${c.notes}`;
             navigator.clipboard.writeText(b).then(() => showToast("COPIED! 📋 Ready to text owner."));
         }
 
@@ -317,15 +343,16 @@
             if (!c) return;
             document.getElementById('edit-id').value = c.id;
             ['first_name','last_name','mobile','shop','role','exp','cur_shop','alc_status','ro_size','email','date','notes'].forEach(k => {
-                document.getElementById(k).value = c[k] || '';
+                const el = document.getElementById(k);
+                if (el) el.value = c[k] || '';
             });
             showView('log'); window.scrollTo(0,0);
         }
 
         function deleteCandidate(id) {
-            if (!confirm("Delete this?")) return;
+            if (!confirm("Delete this Candidate Card?")) return;
             const db = getDB().filter(c => c.id !== id);
-            saveDB(db); renderList(); showToast("Deleted.");
+            saveDB(db); renderList(); showToast("Record Deleted.");
         }
 
         function showView(v) {
