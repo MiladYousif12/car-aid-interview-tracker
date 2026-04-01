@@ -2,25 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Professional Interview Tracker | Car Aid Recruiting</title>
-    <!-- Google Fonts: Inter & Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Interview Tracker Pro | Car Aid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d1117;
             --card-bg: #161b22;
             --accent-blue: #2563eb;
-            --accent-blue-glow: rgba(37, 99, 235, 0.4);
             --accent-green: #10b981;
-            --accent-green-glow: rgba(16, 185, 129, 0.2);
             --accent-orange: #f59e0b;
+            --accent-lime: #a3e635;
             --text-main: #f0f6fc;
             --text-dim: #8b949e;
             --border-color: #30363d;
             --input-bg: #0d1117;
             --error-red: #f87171;
-            --glass-bg: rgba(22, 27, 34, 0.8);
+            --glass-bg: rgba(22, 27, 34, 0.9);
         }
 
         * {
@@ -38,336 +36,75 @@
                 radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             padding: 16px;
+            padding-top: env(safe-area-inset-top);
         }
 
-        /* --- UI COMPONENTS --- */
-        .container {
-            width: 100%;
-            max-width: 500px;
-            animation: fadeIn 0.5s ease-out;
-        }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; }
 
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 28px;
+            border-radius: 32px;
             padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-bottom: 80px; 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            margin-bottom: 40px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
+        header { text-align: center; margin-bottom: 24px; }
+        .logo-img { max-width: 140px; margin-bottom: 12px; }
+        h1 { font-family: 'Outfit', sans-serif; font-size: 26px; letter-spacing: -0.5px; }
+        .version-badge { font-size: 10px; background: #238636; color: white; padding: 2px 10px; border-radius: 50px; margin-left: 8px; vertical-align: middle; }
 
-        .logo-container {
-            margin-bottom: 16px;
-        }
+        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 18px; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; color: var(--text-dim); font-weight: 700; border-radius: 14px; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
 
-        .logo-img {
-            max-width: 140px;
-            height: auto;
-        }
-
-        h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 24px;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-        }
-
-        .version-badge {
-            font-size: 10px;
-            background: var(--border-color);
-            padding: 2px 8px;
-            border-radius: 50px;
-            color: var(--text-dim);
-            font-weight: 600;
-            vertical-align: middle;
-            margin-left: 6px;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-dim);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 4px;
-            border-radius: 16px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border-color);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-dim);
-            font-weight: 600;
-            font-size: 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background: var(--accent-blue);
-            color: white;
-            box-shadow: 0 4px 12px var(--accent-blue-glow);
-        }
-
-        /* Fast Parse Section */
+        /* Parsing UI */
         .smart-parse-box {
-            background: var(--accent-green-glow);
+            background: rgba(16, 185, 129, 0.08);
             border: 1px dashed var(--accent-green);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .box-header {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-green);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-transform: uppercase;
-        }
-
-        .parse-textarea {
-            width: 100%;
-            height: 100px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
-            padding: 12px;
-            font-size: 14px;
-            resize: none;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .magic-btn {
-            width: 100%;
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: transform 0.1s;
-        }
-        .magic-btn:active { transform: scale(0.98); }
-
-        /* Form Controls */
-        .form-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 0px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-            flex: 1;
-        }
-
-        label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .required-star { color: var(--error-red); margin-left: 2px; }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            color: var(--text-main);
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        input:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 4px var(--accent-blue-glow);
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: white;
-            color: black;
-            border: none;
-            border-radius: 14px;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* --- VIEWS --- */
-        #view-list { display: none; }
-
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .count-badge {
-            background: var(--border-color);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .candidate-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 24px;
         }
+        .box-header { font-size: 12px; font-weight: 800; color: var(--accent-green); margin-bottom: 12px; text-transform: uppercase; }
+        .parse-textarea { width: 100%; height: 110px; background: #000; border: 1px solid var(--border-color); border-radius: 14px; color: white; padding: 14px; font-size: 15px; resize: none; }
+        .magic-btn { width: 100%; background: var(--accent-green); color: white; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 12px; cursor: pointer; }
 
-        .candidate-card::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 4px;
-            background: var(--accent-blue);
-        }
+        /* Form */
+        .form-row { display: flex; gap: 12px; }
+        .form-group { margin-bottom: 18px; flex: 1; }
+        label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--text-dim); text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 15px; color: white; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(37,99,235,0.2); }
+        .submit-btn { width: 100%; background: white; color: black; border: none; border-radius: 16px; padding: 18px; font-size: 16px; font-weight: 900; margin-top: 10px; text-transform: uppercase; }
 
-        .cand-name-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
+        /* List */
+        .candidate-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 24px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .candidate-card::before { content: ''; position: absolute; left: 0; top: 20px; bottom: 20px; width: 4px; background: var(--accent-blue); border-radius: 0 4px 4px 0; }
+        .cand-name-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .role-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 5px 12px; border-radius: 10px; }
+        .role-advisor { background: #f59e0b; color: white; }
+        .role-tech { background: #a3e635; color: black; }
+        .cand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; font-size: 13px; color: var(--text-dim); }
+        .cand-grid b { color: white; }
 
-        .cand-full-name { font-size: 19px; font-weight: 800; color: white; }
-        .cand-header-badge { display: none; } /* Replaced by dynamic role badges below */
+        .action-btn { padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 11px; text-transform: uppercase; }
+        .btn-copy { background: var(--accent-orange); color: white; flex: 2; }
+        .btn-edit { background: rgba(255,255,255,0.05); color: white; flex: 1; border: 1px solid var(--border-color); }
 
-        .role-badge { 
-            font-size: 10px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            padding: 4px 10px;
-            border-radius: 8px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .role-advisor { background: #f59e0b; color: white; } /* Vivid Orange */
-        .role-tech { background: #a3e635; color: #000; font-weight: 900; } /* Lime Green */
-        .role-other { background: var(--border-color); color: var(--text-dim); }
-
-        .cand-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 16px;
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-top: 12px;
-        }
-
-        .grid-item { display: flex; align-items: flex-start; gap: 8px; }
-        .grid-item span { color: var(--text-main); font-weight: 600; }
-
-        .cand-actions {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 16px;
-        }
-
-        .action-btn {
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            text-transform: uppercase;
-        }
-        .btn-copy { background: var(--accent-orange); color: white; }
-        .btn-edit { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color); }
-        .btn-del { background: rgba(248, 113, 113, 0.05); color: var(--error-red); border: 1px solid rgba(248, 113, 113, 0.2); }
-
-        /* Toast */
         #toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-green);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            display: none;
-            z-index: 2000;
-            white-space: nowrap;
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            background: #10b981; color: white; padding: 20px 30px; border-radius: 20px;
+            font-weight: 900; z-index: 10000; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            display: none; text-align: center; min-width: 280px; border: 2px solid rgba(255,255,255,0.3);
         }
 
-        @keyframes fieldGlow {
-            0% { border-color: var(--accent-green); background: var(--accent-green-glow); }
-            100% { border-color: var(--border-color); background: var(--input-bg); }
-        }
-        .parsed-field { animation: fieldGlow 1.5s forwards; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        @keyframes fieldGlow { 0% { background: rgba(16,185,129,0.3); } 100% { background: var(--input-bg); } }
+        .parsed-field { animation: fieldGlow 1s forwards; }
     </style>
 </head>
 <body>
@@ -377,249 +114,132 @@
     <div class="container">
         <div class="card">
             <header>
-                <div class="logo-container">
-                    <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
-                </div>
-                <h1>Interview Tracker <span class="version-badge">v3.1.2 [Fix]</span></h1>
-                <p class="subtitle">Professional Recruiting Dashboard</p>
+                <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
+                <h1>Recruiting Pro <span class="version-badge">v3.1.5</span></h1>
             </header>
 
             <div class="tabs">
-                <button class="tab-btn active" id="tab-log" onclick="showView('log')">Log Candidate</button>
-                <button class="tab-btn" id="tab-view" onclick="showView('list')">Database</button>
+                <button class="tab-btn active" id="tab-log" onclick="showView('log')">NEW INTERVIEW</button>
+                <button class="tab-btn" id="tab-view" onclick="showView('list')">DATABASE</button>
             </div>
 
-            <!-- LOGGING VIEW -->
             <div id="view-log">
                 <div class="smart-parse-box">
-                    <div class="box-header"><span>🪄 Magic Auto-Fill (Paste Brief)</span></div>
+                    <div class="box-header">⚡ MAGIC AUTO-FILL</div>
                     <textarea id="raw-text" class="parse-textarea" placeholder="Paste Evans/Jacob summary here..."></textarea>
-                    <button class="magic-btn" onclick="runSmartParse()">✨ Magic Auto-Fill Form</button>
+                    <button class="magic-btn" onclick="runSmartParse()">✨ SCAN & AUTO-FILL FORM</button>
                 </div>
 
                 <form id="candidate-form">
                     <input type="hidden" id="edit-id">
-                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>First Name <span class="required-star">*</span></label>
-                            <input type="text" id="first_name" placeholder="First Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Last Name <span class="required-star">*</span></label>
-                            <input type="text" id="last_name" placeholder="Last Name" required>
-                        </div>
+                        <div class="form-group"><label>First Name</label><input type="text" id="first_name" required></div>
+                        <div class="form-group"><label>Last Name</label><input type="text" id="last_name" required></div>
                     </div>
-
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Phone Number <span class="required-star">*</span></label>
-                            <input type="tel" id="mobile" placeholder="Phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Shop Location <span class="required-star">*</span></label>
-                            <input type="text" id="shop" placeholder="Location" required>
-                        </div>
+                        <div class="form-group"><label>Phone</label><input type="tel" id="mobile" required></div>
+                        <div class="form-group"><label>Shop Location</label><input type="text" id="shop" required></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Candidate Role <span class="required-star">*</span></label>
-                        <input type="text" id="role" placeholder="Role (Advisor/Tech)" required>
-                    </div>
-
+                    <div class="form-group"><label>Role</label><input type="text" id="role" required></div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Years Experience</label>
-                            <input type="text" id="exp" placeholder="e.g. 5+ years">
-                        </div>
-                        <div class="form-group">
-                            <label>Current Shop</label>
-                            <input type="text" id="cur_shop" placeholder="Current location">
-                        </div>
+                        <div class="form-group"><label>Years Exp</label><input type="text" id="exp"></div>
+                        <div class="form-group"><label>Current Shop</label><input type="text" id="cur_shop"></div>
                     </div>
-
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>ALC / ASE Status</label>
-                            <input type="text" id="alc_status" placeholder="Certs/Status">
-                        </div>
-                        <div class="form-group">
-                            <label>Avg RO Size</label>
-                            <input type="text" id="ro_size" placeholder="Averages">
-                        </div>
+                        <div class="form-group"><label>ASE/ALC Status</label><input type="text" id="alc_status"></div>
+                        <div class="form-group"><label>Avg RO Size</label><input type="text" id="ro_size"></div>
                     </div>
-
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" id="email" placeholder="email@domain.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Interview Date</label>
-                            <input type="date" id="date">
-                        </div>
+                        <div class="form-group"><label>Email</label><input type="email" id="email"></div>
+                        <div class="form-group"><label>Date</label><input type="date" id="date"></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Additional Notes</label>
-                        <textarea id="notes" rows="2" placeholder="Specialty, start date..."></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="submit-btn">
-                        <span>🚀 Log & Save Candidate</span>
-                    </button>
+                    <div class="form-group"><label>Notes</label><textarea id="notes" rows="2"></textarea></div>
+                    <button type="submit" class="submit-btn" id="submit-btn">🚀 SAVE CANDIDATE</button>
                 </form>
             </div>
 
-            <!-- DATABASE VIEW -->
-            <div id="view-list">
-                <div class="list-header">
-                    <div class="count-badge"><span id="db-count">0</span> Registered Candidates</div>
-                    <button class="download-btn" onclick="downloadCSV()">📥 Export All (CSV)</button>
+            <div id="view-list" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <div style="font-weight:800; font-size:14px;">Total: <span id="db-count">0</span></div>
+                    <button onclick="downloadCSV()" style="background:transparent; color:var(--accent-green); border:1px solid; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer;">DOWNLOAD CSV</button>
                 </div>
                 <div id="candidate-container"></div>
             </div>
-
-            <footer style="text-align:center; margin-top:30px; font-size:11px; color:var(--text-dim); opacity: 0.6;">
-                Car Aid Automated Recruiting System v3.1.2<br>
-                Secure Local Storage Active
-            </footer>
         </div>
     </div>
 
     <script>
-        const DB_NAME = 'caraid_candidates_v3_1'; 
-        const LEGACY_KEYS = ['caraid_candidates_v3', 'caraid_candidates_v1', 'caraid_candidates'];
+        const DB_KEY = 'caraid_candidates_v3_1';
+        const getDB = () => JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        const saveDB = (d) => localStorage.setItem(DB_KEY, JSON.stringify(d));
 
-        function getDB() {
-            return JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        }
-
-        function saveToDB(data) {
-            localStorage.setItem(DB_NAME, JSON.stringify(data));
-        }
-
-        // --- MASTER SCAVENGER ---
-        function runScavenger() {
-            let recovered = 0;
-            const current = getDB();
-            const currentIds = new Set(current.map(c => c.id));
-
-            LEGACY_KEYS.forEach(key => {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data && Array.isArray(data)) {
-                        data.forEach(item => {
-                            if (!currentIds.has(item.id)) {
-                                let fName = item.first_name || item.name || item.candidate_name || "Unknown";
-                                let lName = item.last_name || "";
-                                if (!item.first_name && (item.name || item.candidate_name)) {
-                                    const parts = (item.name || item.candidate_name).split(' ');
-                                    fName = parts[0];
-                                    lName = parts.slice(1).join(' ');
-                                }
-
-                                const normalized = {
-                                    id: item.id || Date.now() + Math.random(),
-                                    first_name: fName,
-                                    last_name: lName,
-                                    mobile: item.mobile || item.phone || "",
-                                    email: item.email || "",
-                                    shop: item.shop || item.location || "Southfield",
-                                    role: item.role || "Technician",
-                                    exp: item.exp || item.years_experience || "",
-                                    cur_shop: item.cur_shop || item.current_shop || "",
-                                    alc_status: item.alc_status || "",
-                                    ro_size: item.ro_size || "",
-                                    date: item.date || item.interview_date || new Date().toISOString().split('T')[0],
-                                    notes: item.notes || ""
-                                };
-                                current.push(normalized);
-                                currentIds.add(normalized.id);
-                                recovered++;
-                            }
-                        });
-                    }
-                } catch(e) {}
-            });
-
-            if (recovered > 0) {
-                saveToDB(current);
-                renderList();
-            }
-        }
-
-        // --- SMART PARSE 2.0 (REPAIRED & LENIENT) ---
-        function runSmartParse() {
-            const text = document.getElementById('raw-text').value;
-            if (!text.trim()) return showToast("Paste summary first!", "error");
-
-            let found = 0;
-            const textLower = text.toLowerCase();
-
-            const mappings = {
-                first_name: /(?:First Name):\s*([^\n\r]+)/i,
-                last_name: /(?:Last Name):\s*([^\n\r]+)/i,
-                mobile: /(?:Phone Number|Phone):\s*([^\n\r]+)/i,
-                email: /(?:Email Address|Email):\s*([^\n\r]+)/i,
-                shop: /(?:Shop Location|Shop):\s*([^\n\r]+)/i,
-                exp: /(?:Years Experience|Exp):\s*([^\n\r]+)/i,
-                cur_shop: /(?:Current Shop):\s*([^\n\r]+)/i,
-                alc_status: /(?:ALC Status|ASE Status):\s*([^\n\r]+)/i,
-                ro_size: /(?:Average RO Size|RO Size):\s*([^\n\r]+)/i
-            };
-
-            // Improved Role Detection (Handles 'A_Level', 'Adcisor', etc.)
-            if (textLower.includes('advisor') || textLower.includes('adcisor')) {
-                if (setField('role', 'Service Advisor')) found++;
-            } else if (textLower.includes('tech')) {
-                if (setField('role', 'A-Level Technician')) found++;
-            }
-
-            for (const [id, regex] of Object.entries(mappings)) {
-                const match = text.match(regex);
-                if (match && setField(id, match[1])) found++;
-            }
-
-            // Fallback for phone if no label matched
-            if (!document.getElementById('mobile').value) {
-                const genericPhone = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
-                if (genericPhone && setField('mobile', genericPhone[0])) found++;
-            }
-
-            if (found > 0) showToast(`✨ Magic Fill: Populated ${found} fields!`);
-            else showToast("Could not extract info. Check labels.", "error");
-        }
-
-        // --- UI CORE ---
-        function showView(view) {
-            document.getElementById('view-log').style.display = view === 'log' ? 'block' : 'none';
-            document.getElementById('view-list').style.display = view === 'list' ? 'block' : 'none';
-            document.getElementById('tab-log').className = 'tab-btn' + (view === 'log' ? ' active' : '');
-            document.getElementById('tab-view').className = 'tab-btn' + (view === 'list' ? ' active' : '');
-            if (view === 'list') renderList();
+        function showToast(msg, error = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.background = error ? '#ef4444' : '#10b981';
+            t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 4000);
         }
 
         function setField(id, val) {
             const el = document.getElementById(id);
-            if (!el || !val) return false;
-            el.value = val.trim();
-            el.classList.add('parsed-field');
-            setTimeout(() => el.classList.remove('parsed-field'), 1500);
-            return true;
+            if (el && val && val.trim()) {
+                el.value = val.trim();
+                el.classList.add('parsed-field');
+                setTimeout(() => el.classList.remove('parsed-field'), 1000);
+                return true;
+            }
+            return false;
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
+        function runSmartParse() {
+            const text = document.getElementById('raw-text').value;
+            if (!text.trim()) return showToast("Pate text first!", true);
+
+            let found = 0;
+            const textLower = text.toLowerCase();
+
+            // 1. ROLES
+            if (textLower.includes('advisor') || textLower.includes('adcisor')) { if (setField('role', 'Service Advisor')) found++; }
+            else if (textLower.includes('tech') || textLower.includes('level')) { if (setField('role', 'A-Level Technician')) found++; }
+
+            // 2. KEYWORDS
+            const map = [
+                { id: 'first_name', keys: ['first name'] },
+                { id: 'last_name', keys: ['last name'] },
+                { id: 'mobile', keys: ['phone number', 'phone'] },
+                { id: 'email', keys: ['email address', 'email'] },
+                { id: 'shop', keys: ['shop location', 'shop'] },
+                { id: 'exp', keys: ['years experience', 'years'] },
+                { id: 'cur_shop', keys: ['current shop'] },
+                { id: 'alc_status', keys: ['alc status', 'ase status'] },
+                { id: 'ro_size', keys: ['average ro size', 'ro size'] }
+            ];
+
+            text.split('\n').forEach(line => {
+                const parts = line.split(':');
+                if (parts.length >= 2) {
+                    const key = parts[0].toLowerCase().trim();
+                    const val = parts.slice(1).join(':').trim();
+                    map.forEach(m => {
+                        if (m.keys.some(k => key.includes(k)) && val) {
+                            if (setField(m.id, val)) found++;
+                        }
+                    });
+                }
+            });
+
+            // 3. PHONE FALLBACK
+            if (!document.getElementById('mobile').value) {
+                const p = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+                if (p && setField('mobile', p[0])) found++;
+            }
+
+            if (found > 0) showToast(`✅ SUCCESS!\nScanned ${found} details.`);
+            else showToast("❌ NO DATA FOUND.\nMake sure labels have colons (e.g. Phone: 123)", true);
         }
 
-        // --- DATABASE OPS ---
         document.getElementById('candidate-form').onsubmit = function(e) {
             e.preventDefault();
-            const candidate = {
+            const cand = {
                 id: document.getElementById('edit-id').value || Date.now().toString(),
                 first_name: document.getElementById('first_name').value,
                 last_name: document.getElementById('last_name').value,
@@ -634,55 +254,39 @@
                 date: document.getElementById('date').value,
                 notes: document.getElementById('notes').value
             };
-
-            const data = getDB();
-            const idx = data.findIndex(c => c.id === candidate.id);
-            if (idx > -1) data[idx] = candidate;
-            else data.unshift(candidate);
-
-            saveToDB(data);
-            showToast("Success! Candidate Saved ✅");
-            
-            this.reset();
-            document.getElementById('edit-id').value = "";
-            document.getElementById('submit-btn').innerHTML = '<span>🚀 Log & Save Candidate</span>';
+            const db = getDB();
+            const idx = db.findIndex(c => c.id === cand.id);
+            if (idx > -1) db[idx] = cand; else db.unshift(cand);
+            saveDB(db);
+            showToast("CANDIDATE SAVED! ✅");
+            this.reset(); document.getElementById('edit-id').value = "";
             document.getElementById('date').valueAsDate = new Date();
-            setTimeout(() => showView('list'), 400);
+            setTimeout(() => showView('list'), 500);
         };
 
         function renderList() {
             const data = getDB();
             const container = document.getElementById('candidate-container');
             document.getElementById('db-count').innerText = data.length;
-
-            if (data.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:60px; opacity:0.4;">Database is empty</div>`;
-                return;
-            }
-
+            if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; opacity:0.3;">Empty</div>'; return; }
             container.innerHTML = data.map(c => {
-                const roleClass = c.role.toLowerCase().includes('advisor') ? 'role-advisor' : 
-                                 (c.role.toLowerCase().includes('tech') ? 'role-tech' : 'role-other');
-
+                const isAdv = c.role.toLowerCase().includes('advisor');
                 return `
                 <div class="candidate-card">
                     <div class="cand-name-row">
-                        <div class="cand-full-name">${c.first_name} ${c.last_name}</div>
-                        <div class="role-badge ${roleClass}">${c.role}</div>
+                        <div style="font-weight:800; font-size:18px;">${c.first_name} ${c.last_name}</div>
+                        <div class="role-badge ${isAdv ? 'role-advisor' : 'role-tech'}">${c.role}</div>
                     </div>
                     <div class="cand-grid">
-                        <div class="grid-item">📞 <span>${c.mobile}</span></div>
-                        <div class="grid-item">📍 <span>${c.shop}</span></div>
-                        <div class="grid-item">🏢 <span>${c.cur_shop || 'N/A'}</span></div>
-                        <div class="grid-item">🏆 <span>${c.exp || 'N/A'}</span></div>
-                        <div class="grid-item">🛠️ <span>${c.alc_status || 'N/A'}</span></div>
-                        <div class="grid-item">💰 <span>${c.ro_size || 'N/A'}</span></div>
-                        <div class="grid-item" style="grid-column: span 2;">✉️ <span>${c.email || 'No email set'}</span></div>
+                        <div>📞 <b>${c.mobile}</b></div>
+                        <div>📍 <b>${c.shop}</b></div>
+                        <div>🏢 <b>${c.cur_shop || 'N/A'}</b></div>
+                        <div>🏆 <b>${c.exp || 'N/A'}</b></div>
+                        <div style="grid-column: span 2;">🛠️ <b>${c.alc_status || 'N/A'}</b> • 💰 <b>${c.ro_size || 'N/A'}</b></div>
                     </div>
-                    <div class="cand-actions">
-                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 Copy For Owner</button>
-                        <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ Edit</button>
-                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ Del</button>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE WITH OWNER</button>
+                        <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>
                     </div>
                 </div>`;
             }).join('');
@@ -691,78 +295,39 @@
         function copyBrief(id) {
             const c = getDB().find(item => item.id === id);
             if (!c) return;
-
-            const brief = `CANDIDATE PROFILE: ${c.first_name} ${c.last_name}
------------------------------
-- ROLE: ${c.role}
-- LOCATION: ${c.shop}
-- PHONE: ${c.mobile}
-- EMAIL: ${c.email || 'N/A'}
-- EXPERIENCE: ${c.exp}
-- CURRENT SHOP: ${c.cur_shop}
-- ASE/ALC STATUS: ${c.alc_status}
-- AVG RO SIZE: ${c.ro_size}
-- DATE: ${c.date}
-
-NOTES: ${c.notes || 'None.'}`;
-
-            navigator.clipboard.writeText(brief).then(() => {
-                showToast("Summary copied to clipboard! 📋");
-            });
+            const b = `CANDIDATE: ${c.first_name} ${c.last_name}\nROLE: ${c.role}\nLOCATION: ${c.shop}\nPHONE: ${c.mobile}\nEXP: ${c.exp}\nSHOP: ${c.cur_shop}\nASE: ${c.alc_status}\nAVG RO: ${c.ro_size}\nDATE: ${c.date}\nNOTES: ${c.notes}`;
+            navigator.clipboard.writeText(b).then(() => showToast("COPIED! 📋 Ready to text owner."));
         }
 
         function editCandidate(id) {
             const c = getDB().find(item => item.id === id);
             if (!c) return;
-
             document.getElementById('edit-id').value = c.id;
-            document.getElementById('first_name').value = c.first_name;
-            document.getElementById('last_name').value = c.last_name;
-            document.getElementById('mobile').value = c.mobile;
-            document.getElementById('shop').value = c.shop;
-            document.getElementById('role').value = c.role;
-            document.getElementById('exp').value = c.exp;
-            document.getElementById('cur_shop').value = c.cur_shop;
-            document.getElementById('alc_status').value = c.alc_status;
-            document.getElementById('ro_size').value = c.ro_size;
-            document.getElementById('email').value = c.email;
-            document.getElementById('date').value = c.date;
-            document.getElementById('notes').value = c.notes;
-
-            document.getElementById('submit-btn').innerHTML = '<span>📝 Update Candidate</span>';
-            showView('log');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            ['first_name','last_name','mobile','shop','role','exp','cur_shop','alc_status','ro_size','email','date','notes'].forEach(k => {
+                document.getElementById(k).value = c[k];
+            });
+            showView('log'); window.scrollTo(0,0);
         }
 
-        function deleteCandidate(id) {
-            if (!confirm("Are you sure?")) return;
-            const data = getDB().filter(c => c.id !== id);
-            saveToDB(data);
-            renderList();
-            showToast("Candidate removed.");
+        function showView(v) {
+            document.getElementById('view-log').style.display = v === 'log' ? 'block' : 'none';
+            document.getElementById('view-list').style.display = v === 'list' ? 'block' : 'none';
+            document.getElementById('tab-log').classList.toggle('active', v === 'log');
+            document.getElementById('tab-view').classList.toggle('active', v === 'list');
+            if (v === 'list') renderList();
         }
 
         function downloadCSV() {
-            const data = getDB();
-            if (data.length === 0) return showToast("Nothing to export");
-
-            const headers = ["First", "Last", "Phone", "Location", "Role", "Exp", "Current Shop", "ALC Status", "Avg RO", "Email", "Date"];
-            const csv = [headers.join(",")];
-            data.forEach(c => {
-                const row = [`"${c.first_name}"`,`"${c.last_name}"`,`"${c.mobile}"`,`"${c.shop}"`,`"${c.role}"`,`"${c.exp}"`,`"${c.cur_shop}"`,`"${c.alc_status}"`,`"${c.ro_size}"`,`"${c.email}"`,c.date];
-                csv.push(row.join(","));
-            });
-            const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `caraid_export.csv`;
-            a.click();
+            const d = getDB();
+            const h = ["First","Last","Phone","Location","Role","Exp","Shop","ASE","RO","Email","Date"];
+            const csv = [h.join(",")];
+            d.forEach(c => csv.push([c.first_name,c.last_name,c.mobile,c.shop,c.role,c.exp,c.cur_shop,c.alc_status,c.ro_size,c.email,c.date].map(v => `"${v}"`).join(",")));
+            const b = new Blob([csv.join("\n")], { type: 'text/csv' });
+            const url = URL.createObjectURL(b);
+            const a = document.createElement("a"); a.href = url; a.download = "candidates.csv"; a.click();
         }
 
-        // INIT
         document.getElementById('date').valueAsDate = new Date();
-        runScavenger();
         renderList();
     </script>
 </body>
