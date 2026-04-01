@@ -2,21 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Interview Tracker | Car Aid Recruiting</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d1117;
             --card-bg: #161b22;
-            --primary-blue: #2563eb;
-            --hover-blue: #3b82f6;
-            --success-green: #10b981;
+            --accent-blue: #2563eb;
+            --accent-blue-glow: rgba(37, 99, 235, 0.4);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.2);
             --text-main: #f0f6fc;
             --text-dim: #8b949e;
             --border-color: #30363d;
-            --input-bg: rgba(13, 17, 23, 0.7);
+            --input-bg: #0d1117;
+            --error-red: #f87171;
+            --glass-bg: rgba(22, 27, 34, 0.8);
         }
 
         * {
@@ -29,6 +32,9 @@
 
         body {
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -37,108 +43,114 @@
             padding: 16px;
         }
 
-        /* Main Container matching the screenshot */
-        .card {
+        /* --- UI COMPONENTS --- */
+        .container {
             width: 100%;
             max-width: 480px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        /* Header Layout */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 80px; /* Space for bottom nav */
+        }
+
         header {
             text-align: center;
             margin-bottom: 24px;
         }
 
-        .logo-placeholder {
-            width: 80px;
-            height: 48px;
-            margin: 0 auto 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
+        .logo-container {
+            margin-bottom: 16px;
         }
 
         .logo-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            max-width: 140px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
         }
 
         h1 {
-            font-size: 20px;
-            font-weight: 700;
-            line-height: 1.2;
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            letter-spacing: -0.5px;
             margin-bottom: 4px;
-            color: var(--text-main);
+        }
+
+        .version-badge {
+            font-size: 10px;
+            background: var(--border-color);
+            padding: 2px 8px;
+            border-radius: 50px;
+            color: var(--text-dim);
+            font-weight: 600;
+            vertical-align: middle;
+            margin-left: 6px;
         }
 
         .subtitle {
             font-size: 14px;
             color: var(--text-dim);
-            margin-bottom: 20px;
         }
 
-        /* Tab Navigation */
+        /* Tabs */
         .tabs {
             display: flex;
-            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 14px;
             margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
 
         .tab-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
+            padding: 10px;
             border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
         }
 
         .tab-btn.active {
-            background: var(--primary-blue);
+            background: var(--accent-blue);
             color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .tab-btn.inactive {
-            background: #21262d;
-            color: var(--text-dim);
+            box-shadow: 0 4px 12px var(--accent-blue-glow);
         }
 
         /* Fast Parse Section */
-        .parse-container {
-            border: 1px dashed #4ade8050;
-            background: rgba(16, 185, 129, 0.05);
-            border-radius: 16px;
+        .smart-parse-box {
+            background: var(--accent-green-glow);
+            border: 1px dashed var(--accent-green);
+            border-radius: 18px;
             padding: 16px;
             margin-bottom: 24px;
         }
 
-        .section-title {
-            font-size: 13px;
+        .box-header {
+            font-size: 12px;
             font-weight: 700;
-            color: #4ade80;
-            margin-bottom: 12px;
+            color: var(--accent-green);
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
+            text-transform: uppercase;
         }
 
         .parse-textarea {
             width: 100%;
-            height: 80px;
+            height: 90px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -150,11 +162,9 @@
             transition: border-color 0.2s;
         }
 
-        .parse-textarea:focus { border-color: #4ade8050; }
-
         .magic-btn {
             width: 100%;
-            background: var(--success-green);
+            background: var(--accent-green);
             color: white;
             border: none;
             border-radius: 12px;
@@ -167,656 +177,587 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: opacity 0.2s;
+            transition: transform 0.1s;
         }
+        .magic-btn:active { transform: scale(0.98); }
 
-        /* Form Fields */
+        /* Form Controls */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
+        .required-star { color: var(--error-red); margin-left: 2px; }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text-main);
             font-size: 16px;
             outline: none;
             transition: all 0.2s;
-            appearance: none;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--hover-blue);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px var(--accent-blue-glow);
         }
 
-        /* Custom Select Arrow */
-        .select-wrapper {
-            position: relative;
-        }
-        .select-wrapper::after {
-            content: '↕';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-dim);
-            pointer-events: none;
+        .error-msg {
+            color: var(--error-red);
             font-size: 12px;
+            margin-top: 4px;
+            display: none;
         }
 
-        /* Submit Button */
         .submit-btn {
             width: 100%;
-            background: var(--text-main);
+            background: white;
             color: black;
             border: none;
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 18px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: transform 0.1s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .submit-btn:active { transform: scale(0.98); }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 32px;
+        /* --- VIEWS --- */
+        #view-list { display: none; }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .count-badge {
+            background: var(--border-color);
+            padding: 4px 10px;
+            border-radius: 8px;
             font-size: 12px;
-            color: var(--text-dim);
-            line-height: 1.6;
+            font-weight: 600;
         }
 
-        /* Views */
-        #view-candidates-section { display: none; }
+        .download-btn {
+            background: var(--accent-green-glow);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-        /* Candidate Card */
         .candidate-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
         }
-        .candidate-header {
+
+        .candidate-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: var(--accent-blue);
+        }
+
+        .cand-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
-        .candidate-name { font-weight: 700; font-size: 16px; }
-        .candidate-role { font-size: 11px; font-weight: 700; color: var(--primary-blue); text-transform: uppercase; letter-spacing: 0.5px; }
-        .candidate-meta { font-size: 13px; color: var(--text-dim); display: flex; flex-direction: column; gap: 4px; }
+
+        .cand-name { font-size: 18px; font-weight: 700; color: white; }
+        .cand-role { 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--accent-blue); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            background: var(--accent-blue-glow);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .cand-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .cand-item { display: flex; align-items: center; gap: 6px; }
+
+        .cand-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-edit { background: rgba(37, 99, 235, 0.1); color: var(--accent-blue); }
+        .btn-del { background: rgba(248, 113, 113, 0.1); color: var(--error-red); }
 
         /* Toast */
         #toast {
             position: fixed;
-            top: 20px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
+            background: var(--accent-green);
+            color: white;
             padding: 12px 24px;
             border-radius: 50px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
-            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             display: none;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            z-index: 2000;
         }
-        .toast-success { background: #10b981; color: white; }
-        .toast-error { background: #ef4444; color: white; }
 
         /* Parsing Success Animation */
-        @keyframes field-glow {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); border-color: #4ade80; }
-            50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(74, 222, 128, 0.1); border-color: #4ade80; }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); border-color: var(--border-color); }
+        @keyframes fieldGlow {
+            0% { border-color: var(--accent-green); background: var(--accent-green-glow); }
+            100% { border-color: var(--border-color); background: var(--input-bg); }
         }
-        .field-success {
-            animation: field-glow 1.5s ease-out;
+        .parsed-field { animation: fieldGlow 2s forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Debug UI */
-        #debug-console {
-            margin-top: 24px;
-            padding: 12px;
-            background: #000;
-            border: 1px solid #333;
-            border-radius: 8px;
+        /* Debug Footer */
+        .debug-log {
+            margin-top: 20px;
             font-family: monospace;
-            font-size: 10px;
+            font-size: 9px;
             color: #4ade80;
-            max-height: 120px;
+            padding: 10px;
+            background: #000;
+            border-radius: 8px;
+            max-height: 100px;
             overflow-y: auto;
             display: none;
         }
+        
     </style>
 </head>
 <body>
 
     <div id="toast"></div>
 
-    <div class="card">
-        <header>
-            <div class="logo-placeholder" style="background: none; border: none;">
-                <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
-            </div>
--            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.8</small></h1>
-+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.5 [Local Edition]</small></h1>
-            <p class="subtitle">Secure Local-Only Dashboard</p>
-            <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                🏠 Storage: <span id="status-text" style="color: #10b981;">Direct Mode (Stable)</span>
-            </div>
-            <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Local v2.9)
-            </button>
-            <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
-                ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
-            </div>
-        </header>
+    <div class="container">
+        <div class="card">
+            <header>
+                <div class="logo-container">
+                    <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
+                </div>
+                <h1>Interview Tracker <span class="version-badge">v3.0.0 [Local]</span></h1>
+                <p class="subtitle">Secure Candidate Database</p>
+            </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-log" onclick="switchTab('log')">Log Interview View</button>
-            <button class="tab-btn inactive" id="tab-view" onclick="switchTab('view')">View Candidates</button>
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-log" onclick="showView('log')">Log Interview</button>
+                <button class="tab-btn" id="tab-view" onclick="showView('list')">Database</button>
+            </div>
+
+            <!-- VIEW 1: LOGGING FORM -->
+            <div id="view-log">
+                <div class="smart-parse-box">
+                    <div class="box-header">
+                        <span>🪄 Smart Parse (Paste Summary)</span>
+                    </div>
+                    <textarea id="raw-text" class="parse-textarea" placeholder="Paste candidate text here... (Smart detection enabled)"></textarea>
+                    <button class="magic-btn" onclick="runSmartParse()">✨ Magic Auto-Fill</button>
+                </div>
+
+                <form id="candidate-form">
+                    <input type="hidden" id="edit-id">
+                    
+                    <div class="form-group">
+                        <label>Candidate Name <span class="required-star">*</span></label>
+                        <input type="text" id="name" placeholder="Full Name" required>
+                        <div class="error-msg" id="name-error">Name is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number <span class="required-star">*</span></label>
+                        <input type="tel" id="mobile" placeholder="(555) 000-0000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Shop Location <span class="required-star">*</span></label>
+                        <input type="text" id="shop" placeholder="Waterford, Troy, etc." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Candidate Role <span class="required-star">*</span></label>
+                        <input type="text" id="role" placeholder="Service Advisor, Tech..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Int Date</label>
+                        <input type="date" id="date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email (Optional)</label>
+                        <input type="email" id="email" placeholder="email@domain.com">
+                    </div>
+
+                    <div class="form-row" style="display:flex; gap:12px;">
+                        <div class="form-group" style="flex:1">
+                            <label>Experience</label>
+                            <input type="text" id="exp" placeholder="5+ Years">
+                        </div>
+                        <div class="form-group" style="flex:1">
+                            <label>Current Shop</label>
+                            <input type="text" id="cur_shop" placeholder="Dealership">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Specialty & Notes</label>
+                        <textarea id="notes" rows="3" placeholder="Additional notes..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span>🚀 Log Candidate</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- VIEW 2: DATABASE LIST -->
+            <div id="view-list">
+                <div class="list-header">
+                    <div class="count-badge"><span id="db-count">0</span> Candidates</div>
+                    <button class="download-btn" onclick="downloadCSV()">📥 Download CSV Export</button>
+                </div>
+                <div id="candidate-container">
+                    <!-- Cards injected here -->
+                </div>
+            </div>
+
+            <footer style="text-align:center; margin-top:30px; font-size:11px; color:var(--text-dim);">
+                Car Aid Automated Gateway • Pure Local Mode<br>
+                <div id="debug" class="debug-log"></div>
+            </footer>
         </div>
-
-        <!-- Logging Form Section -->
-        <div id="log-interview-section">
-            <div class="parse-container">
-                <div class="section-title">
-                    <span>⚡ Fast Parse (Paste Summary Below)</span>
-                </div>
-                <textarea id="raw-summary" class="parse-textarea" placeholder="Paste candidate summary here... (Name, Phone, etc.)"></textarea>
-                <button type="button" onclick="handleMagicFill()" class="magic-btn">🪄 Magic Auto-Fill</button>
-            </div>
-
-            <form id="tracker-form">
-                <div class="form-group">
-                    <label>Candidate Name (First / Last)</label>
-                    <input type="text" name="candidate_name" id="candidate_name" placeholder="Jonathan Shumake II" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" name="phone" id="phone" placeholder="(555) 000-0000" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" id="email" placeholder="candidate@email.com">
-                </div>
-
-                <div class="form-group">
-                    <label>Sent for Interview On</label>
-                    <input type="date" name="interview_date" id="interview_date" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Shop Location</label>
-                    <input type="text" name="location" id="location" placeholder="Southfield, Troy, Waterford..." required>
-                </div>
-
-                <div class="form-group">
-                    <label>Candidate Role</label>
-                    <input type="text" name="role" id="role" placeholder="A-Level Technician or Service Advisor..." required>
-                </div>
-
-                <div class="form-row" style="display: flex; gap: 12px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Years Experience</label>
-                        <input type="text" name="years_experience" id="years_experience" placeholder="10+ years">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Current Shop</label>
-                        <input type="text" name="current_shop" id="current_shop" placeholder="Belle Tire">
-                    </div>
-                </div>
-
-                <div class="form-row" style="display: flex; gap: 12px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Avg RO Size</label>
-                        <input type="text" name="ro_size" id="ro_size" placeholder="$700-$1,200">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>ASE Status</label>
-                        <input type="text" name="ase_status" id="ase_status" placeholder="L1/A8 or Yes">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Interviewer</label>
-                    <input type="text" name="interviewer" id="interviewer" value="Sal" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Specialty & Notes</label>
-                    <textarea name="notes" id="notes" rows="4" placeholder="Solid background, eager to start..."></textarea>
-                </div>
-
-                <input type="hidden" name="editing_id" id="editing_id">
-
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    <span>🚀 Log Interview</span>
-                </button>
-            </form>
-        </div>
-
-        <!-- Candidate Viewing Section -->
-        <div id="view-candidates-section">
-            <div style="margin-bottom: 16px; display: flex; justify-content: flex-end;">
-                <button onclick="downloadCSV()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success-green); color: var(--success-green); padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                    📥 Download Candidates (CSV)
-                </button>
-            </div>
-            <div id="candidates-list">
-                <p style="text-align: center; color: var(--text-dim); padding: 40px 0;">Loading candidates...</p>
-            </div>
-        </div>
-
-        <footer>
-            Car Aid Recruiting © 2026<br>
-            Stable Gateway Deployment
-            <div id="debug-console"></div>
-        </footer>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const DB_KEY = 'caraid_candidates_v1';
+        // --- CORE DATABASE ---
+        const DB_NAME = 'caraid_candidates_v3'; // Fresh start v3 key
+        const OLD_KEYS = ['caraid_candidates', 'caraid_candidates_v1', 'caraid_db', 'interview_tracker_db'];
 
-        // --- UI LOGIC ---
-        function switchTab(tab) {
-            const logSection = document.getElementById('log-interview-section');
-            const viewSection = document.getElementById('view-candidates-section');
-            const logTab = document.getElementById('tab-log');
-            const viewTab = document.getElementById('tab-view');
-
-            if (tab === 'log') {
-                logSection.style.display = 'block';
-                viewSection.style.display = 'none';
-                logTab.className = 'tab-btn active';
-                viewTab.className = 'tab-btn inactive';
-            } else {
-                logSection.style.display = 'none';
-                viewSection.style.display = 'block';
-                logTab.className = 'tab-btn inactive';
-                viewTab.className = 'tab-btn active';
-                loadCandidates();
-            }
+        function getDB() {
+            return JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         }
 
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.className = type === 'success' ? 'toast-success' : 'toast-error';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        function saveToDB(data) {
+            localStorage.setItem(DB_NAME, JSON.stringify(data));
         }
 
-        function logDebug(msg) {
-            const console = document.getElementById('debug-console');
-            console.style.display = 'block';
-            console.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-            console.scrollTop = console.scrollHeight;
-        }
-
-        function forceReload() {
-            window.location.href = window.location.pathname + '?v=' + Date.now();
-        }
-
-        function updateSyncUI(status, msg) {
-            const statusText = document.getElementById('status-text');
-            if (!statusText) return;
-            statusText.innerText = msg;
-            statusText.style.color = (status === 'ok' || status === 'local') ? '#10b981' : '#ef4444';
-        }
-
-        logDebug("Car Aid Tracker v2.9.5 [Local Edition] initialized.");
-
-        // --- DATA RECOVERY ENGINE (The Scavenger) ---
-        function runDataScavenger() {
-            logDebug("Scanning device for candidates from previous versions...");
-            const searchKeys = ['caraid_candidates', 'caraid_candidates_v1', 'interview_tracker_db', 'caraid_db'];
+        // --- THE MASTER SCAVENGER ---
+        function runScavenger() {
+            logDebug("Starting Master Scavenger...");
             let recovered = 0;
-            
-            const currentData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            const currentIds = new Set(currentData.map(c => c.id || c.candidate_name + (c.phone || "")));
-            
-            searchKeys.forEach(key => {
+            const current = getDB();
+            const currentIds = new Set(current.map(c => c.id || c.name + c.mobile));
+
+            OLD_KEYS.forEach(key => {
                 try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data && Array.isArray(data)) {
-                        data.forEach(item => {
-                            const uniqueId = item.id || item.candidate_name + (item.phone || "");
-                            if (!currentIds.has(uniqueId)) {
-                                item.id = item.id || Date.now().toString() + Math.random();
-                                currentData.push(item);
-                                currentIds.add(uniqueId);
+                    const oldData = JSON.parse(localStorage.getItem(key));
+                    if (oldData && Array.isArray(oldData)) {
+                        oldData.forEach(item => {
+                            // Standardize keys from older versions
+                            const normalized = {
+                                id: item.id || Date.now() + Math.random(),
+                                name: item.name || item.candidate_name || "Unknown",
+                                mobile: item.mobile || item.phone || "",
+                                role: item.role || "Technician",
+                                shop: item.shop || item.location || "Southfield",
+                                date: item.date || item.interview_date || new Date().toISOString().split('T')[0],
+                                email: item.email || "",
+                                exp: item.exp || item.years_experience || "",
+                                cur_shop: item.cur_shop || item.current_shop || "",
+                                notes: item.notes || ""
+                            };
+                            
+                            const signature = normalized.name + normalized.mobile;
+                            if (!currentIds.has(signature)) {
+                                current.push(normalized);
+                                currentIds.add(signature);
                                 recovered++;
                             }
                         });
                     }
                 } catch(e) {}
             });
-            
+
             if (recovered > 0) {
-                localStorage.setItem(DB_KEY, JSON.stringify(currentData));
-                logDebug(`[Success] Recovered ${recovered} candidates from phone history.`);
-                showToast(`SUCCESS: Recovered ${recovered} candidates! 🎉`);
-                renderList(currentData);
-            }
-        }
-        
-        // Auto-run scavenger on load
-        runDataScavenger();
-
-        // --- UTILITY LOGIC ---
-        function fillAndGlow(id, value) {
-            const el = document.getElementById(id);
-            if (!el || !value) return false;
-            
-            el.value = value.trim();
-            el.classList.remove('field-success');
-            void el.offsetWidth; // Trigger reflow
-            el.classList.add('field-success');
-            return true;
-        }
-
-        // Set default date to today
-        document.getElementById('interview_date').valueAsDate = new Date();
-
-        // --- HIGH-RELIABILITY MAGIC AUTO-FILL ---
-        function handleMagicFill() {
-            logDebug("Magic wand ✨ triggered...");
-            const text = document.getElementById('raw-summary').value;
-            if (!text.trim()) {
-                showToast("Please paste some text first!", "error");
-                logDebug("Error: No text in box.");
-                return;
-            }
-
-            let foundCount = 0;
-
-            // 1. Basic Info (Name, Phone, Email)
-            const firstName = (text.match(/(?:First Name|Name):\s*([^\n\r]+)/i) || [])[1] || "";
-            const lastName = (text.match(/Last Name:\s*([^\n\r]+)/i) || [])[1] || "";
-            if (firstName || lastName) {
-                if (fillAndGlow('candidate_name', `${firstName} ${lastName}`)) {
-                    foundCount++;
-                    logDebug(`Found Name: ${firstName} ${lastName}`);
-                }
-            }
-
-            const phone = (text.match(/(?:Phone Number|Phone):\s*([\d\-\(\)\s]+)/i) || [])[1];
-            if (fillAndGlow('phone', phone)) {
-                 foundCount++;
-                 logDebug(`Found Phone: ${phone}`);
-            }
-
-            const email = (text.match(/(?:Email Address|Email|@):\s*([^\s@]+@[^\s@]+\.[^\s@]+)/i) || [])[1];
-            if (fillAndGlow('email', email)) {
-                foundCount++;
-                logDebug(`Found Email: ${email}`);
-            }
-
-            // 2. Role Detection (Lenient anywhere check)
-            const topText = text.toLowerCase();
-            let detectedRole = "";
-            if (topText.includes("advisor")) detectedRole = "Service Advisor";
-            else if (topText.includes("tech") || topText.includes("technician")) detectedRole = "A-Level Technician";
-            
-            if (detectedRole && fillAndGlow('role', detectedRole)) {
-                foundCount++;
-                logDebug(`Role Detected: ${detectedRole}`);
+                saveToDB(current);
+                logDebug(`Scavenger found ${recovered} candidates! 🎉`);
+                showToast(`Recovered ${recovered} Candidates! 🎉`);
+                renderList();
             } else {
-                logDebug("Role Search: No keyword match in text.");
+                logDebug("No data found in older versions.");
             }
+        }
 
-            // 3. Location Detection (Case-insensitive)
-            const locations = ["Waterford", "Southfield", "Utica", "Shelby Township", "Troy"];
-            let foundLoc = false;
-            for (const loc of locations) {
-                if (topText.includes(loc.toLowerCase())) {
-                    if (fillAndGlow('location', loc)) {
-                        foundCount++;
-                        logDebug(`Location Found: ${loc}`);
-                        foundLoc = true;
-                    }
+        // --- SMART PARSE ENGINE ---
+        function runSmartParse() {
+            const text = document.getElementById('raw-text').value;
+            if (!text.trim()) return showToast("Paste text first!", "error");
+
+            logDebug("Running Smart Parse...");
+            const textLower = text.toLowerCase();
+            let found = 0;
+
+            // 1. Phone Detection (Robust regex for 555-555-5555 formats)
+            const phoneMatch = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+            if (phoneMatch && setField('mobile', phoneMatch[0])) found++;
+
+            // 2. Role Detection (Keywords)
+            if (textLower.includes('advisor')) { if (setField('role', 'Service Advisor')) found++; }
+            else if (textLower.includes('tech') || textLower.includes('technician')) { if (setField('role', 'A-Level Technician')) found++; }
+
+            // 3. Location Detection
+            const locs = ['Waterford', 'Southfield', 'Utica', 'Shelby', 'Waterford'];
+            for (const loc of locs) {
+                if (textLower.includes(loc.toLowerCase())) {
+                    if (setField('shop', loc)) found++;
                     break;
                 }
             }
-            if (!foundLoc) logDebug("Location Search: No keywords found in summary.");
 
-            // 4. Detailed Pro Info
-            const fields = [
-                { id: 'years_experience', name: 'Years Exp', regex: /Years Experience:\s*([^\n\r]+)/i },
-                { id: 'current_shop', name: 'Cur Shop', regex: /Current Shop:\s*([^\n\r]+)/i },
-                { id: 'pay_range', name: 'Pay Range', regex: /Pay Range:\s*([^\n\r]+)/i },
-                { id: 'ro_size', name: 'RO Size', regex: /Average RO Size:\s*([^\n\r]+)/i },
-                { id: 'ase_status', name: 'ASE Status', regex: /ASE Status:\s*([^\n\r]+)/i },
-                { id: 'notes', name: 'Specialty', regex: /Specialty:\s*([^\n\r]+)/i }
-            ];
-
-            fields.forEach(field => {
-                const match = (text.match(field.regex) || [])[1];
-                if (match && fillAndGlow(field.id, match)) {
-                    foundCount++;
-                    logDebug(`Field Found: ${field.name}`);
+            // 4. Name Detection (Heuristic: Lines that look like "First Last" or "Name: John")
+            const nameMatch = text.match(/(?:Name|Candidate):\s*([^\n\r]+)/i);
+            if (nameMatch) {
+                if (setField('name', nameMatch[1])) found++;
+            } else {
+                // Fallback: try first line if it's short
+                const firstLine = text.split('\n')[0].trim();
+                if (firstLine.length < 30 && firstLine.split(' ').length >= 2) {
+                    if (setField('name', firstLine)) found++;
                 }
+            }
+
+            // 5. Exp & Shop
+            const expMatch = text.match(/(?:Exp|Years|Experience):\s*([^\n\r]+)/i);
+            if (expMatch) setField('exp', expMatch[1]);
+
+            if (found > 0) showToast(`Smart Fill: Populated ${found} fields!`);
+            else showToast("No clear info found in text.", "error");
+        }
+
+        // --- UI HANDLERS ---
+        function showView(view) {
+            const views = { log: 'view-log', list: 'view-list' };
+            const tabs = { log: 'tab-log', list: 'tab-view' };
+            
+            Object.keys(views).forEach(k => {
+                document.getElementById(views[k]).style.display = k === view ? 'block' : 'none';
+                document.getElementById(tabs[k]).className = 'tab-btn' + (k === view ? ' active' : '');
             });
 
-            if (foundCount > 0) {
-                showToast(`Magic Fill Complete! ✨ Updated ${foundCount} fields.`);
-                logDebug(`Fill Successful: ${foundCount} items.`);
-            } else {
-                showToast("Magic Wand found no matches. Check format.", "error");
-                logDebug("Search Ended: 0 matches found.");
-            }
+            if (view === 'list') renderList();
         }
 
-        // --- SUBMISSION LOGIC ---
-        const form = document.getElementById('tracker-form');
-        const submitBtn = document.getElementById('submit-btn');
+        function setField(id, val) {
+            const el = document.getElementById(id);
+            if (!el || !val) return false;
+            el.value = val.trim();
+            el.classList.add('parsed-field');
+            setTimeout(() => el.classList.remove('parsed-field'), 2000);
+            return true;
+        }
 
-        form.addEventListener('submit', async (e) => {
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.background = type === 'success' ? 'var(--accent-green)' : 'var(--error-red)';
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function logDebug(msg) {
+            const db = document.getElementById('debug');
+            // db.style.display = 'block'; // Uncomment to see live logs in UI
+            db.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            db.scrollTop = db.scrollHeight;
+        }
+
+        function forceReload() {
+            window.location.href = window.location.pathname + '?refresh=' + Date.now();
+        }
+
+        // --- FORM LOGIC ---
+        document.getElementById('candidate-form').onsubmit = function(e) {
             e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '⚡ Saving...';
             
-            const editingId = document.getElementById('editing_id').value;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span>⏳ ${editingId ? 'Updating...' : 'Saving...'}</span>`;
+            const candidate = {
+                id: document.getElementById('edit-id').value || Date.now().toString(),
+                name: document.getElementById('name').value,
+                mobile: document.getElementById('mobile').value,
+                role: document.getElementById('role').value,
+                shop: document.getElementById('shop').value,
+                date: document.getElementById('date').value,
+                email: document.getElementById('email').value,
+                exp: document.getElementById('exp').value,
+                cur_shop: document.getElementById('cur_shop').value,
+                notes: document.getElementById('notes').value
+            };
 
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+            const data = getDB();
+            const index = data.findIndex(c => c.id === candidate.id);
             
-            // Add fallback name and ID
-            if (!data.candidate_name) data.candidate_name = "Walk-in / Unknown";
-            data.timestamp = new Date().toISOString();
-            // Local-Only Save Logic
-            try {
-                const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-                if (editingId) {
-                    const idx = existing.findIndex(c => c.id === editingId);
-                    if (idx !== -1) {
-                        data.id = editingId;
-                        existing[idx] = data;
-                    }
-                } else {
-                    data.id = data.id || Date.now().toString();
-                    existing.unshift(data);
-                }
-                localStorage.setItem(DB_KEY, JSON.stringify(existing));
+            if (index > -1) data[index] = candidate;
+            else data.unshift(candidate);
 
-                showToast(editingId ? "Changes saved locally! 💾" : "Candidate saved to phone! ✅");
-                form.reset();
-                document.getElementById('editing_id').value = "";
-                document.getElementById('raw-summary').value = "";
-                document.getElementById('interview_date').valueAsDate = new Date();
-                submitBtn.innerHTML = "<span>🚀 Log Interview</span>";
-                
-                setTimeout(() => switchTab('view'), 800);
-
-            } catch (err) {
-                console.error(err);
-                showToast("Memory full or storage error.", "error");
-            } finally {
-                submitBtn.disabled = false;
-            }
-        });
-
-        // --- LOCAL LOADING (v2.9.5) ---
-        function loadCandidates() {
-            const list = document.getElementById('candidates-list');
+            saveToDB(data);
+            showToast("Candidate Saved Successfully!");
             
-            // Show local cache immediately
-            const cached = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            renderList(cached);
-            logDebug(`[Local] Loaded ${cached.length} records from phone memory.`);
-            updateSyncUI('local', `Storage: ${cached.length} records`);
-        }
+            this.reset();
+            document.getElementById('edit-id').value = "";
+            document.getElementById('submit-btn').innerHTML = '<span>🚀 Log Candidate</span>';
+            document.getElementById('date').valueAsDate = new Date();
+            
+            setTimeout(() => showView('list'), 500);
+        };
 
-        function renderList(data) {
-            const list = document.getElementById('candidates-list');
+        function renderList() {
+            const data = getDB();
+            const container = document.getElementById('candidate-container');
+            document.getElementById('db-count').innerText = data.length;
+
             if (data.length === 0) {
-                list.innerHTML = `
-                    <div style="text-align: center; color: var(--text-dim); padding: 60px 20px;">
-                        <span style="font-size: 40px; display: block; margin-bottom: 20px; opacity: 0.3;">☁️</span>
-                        <p>No candidates in cloud yet.</p>
-                    </div>`;
+                container.innerHTML = `<div style="text-align:center; padding:50px; color:var(--text-dim);">No candidates in database yet.</div>`;
                 return;
             }
 
-            list.innerHTML = data.map(c => `
+            container.innerHTML = data.map(c => `
                 <div class="candidate-card">
-                    <div class="candidate-header">
-                        <span class="candidate-name">${c.candidate_name}</span>
-                        <span class="candidate-role">${c.role}</span>
+                    <div class="cand-header">
+                        <div class="cand-name">${c.name}</div>
+                        <div class="cand-role">${c.role}</div>
                     </div>
-                    <div class="candidate-meta">
-                        <span>📞 ${c.phone}</span>
-                        ${c.email ? `<span>📧 ${c.email}</span>` : ''}
-                        <span>📍 ${c.location}</span>
-                        ${c.years_experience ? `<span>⏳ Exp: ${c.years_experience}</span>` : ''}
-                        ${c.current_shop ? `<span>🏢 Shop: ${c.current_shop}</span>` : ''}
-                        ${c.ro_size ? `<span>💰 RO: ${c.ro_size}</span>` : ''}
-                        ${c.ase_status ? `<span>🛡️ ASE: ${c.ase_status}</span>` : ''}
-                        <span>👤 Interviewer: ${c.interviewer}</span>
-                        <span>📅 Date: ${new Date(c.interview_date).toLocaleDateString()}</span>
+                    <div class="cand-info">
+                        <div class="cand-item">📞 ${c.mobile}</div>
+                        <div class="cand-item">📍 ${c.shop}</div>
+                        <div class="cand-item">📅 ${c.date}</div>
+                        ${c.email ? `<div class="cand-item">✉️ Email set</div>` : ''}
                     </div>
-                    <div style="display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
-                        <button onclick="editCandidate('${c.id}')" style="flex: 1; background: none; border: 1px solid var(--primary-blue); border-radius: 6px; color: var(--primary-blue); font-size: 11px; padding: 6px; cursor: pointer; font-weight: 600;">
-                            ✏️ Edit Info
-                        </button>
-                        <button onclick="deleteCandidate('${c.id}')" style="background: none; border: none; color: #ef4444; font-size: 11px; padding: 6px; cursor: pointer; opacity: 0.7;">
-                            🗑️ Delete
-                        </button>
+                    <div class="cand-actions">
+                        <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ Edit</button>
+                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
         function editCandidate(id) {
-            const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            const candidate = data.find(c => c.id === id);
-            
-            if (candidate) {
-                // Populate all fields
-                document.getElementById('editing_id').value = candidate.id;
-                document.getElementById('candidate_name').value = candidate.candidate_name;
-                document.getElementById('phone').value = candidate.phone;
-                document.getElementById('email').value = candidate.email;
-                document.getElementById('location').value = candidate.location;
-                document.getElementById('role').value = candidate.role;
-                document.getElementById('years_experience').value = candidate.years_experience || "";
-                document.getElementById('current_shop').value = candidate.current_shop || "";
-                document.getElementById('ro_size').value = candidate.ro_size || "";
-                document.getElementById('pay_range').value = candidate.pay_range || "";
-                document.getElementById('ase_status').value = candidate.ase_status || "";
-                document.getElementById('notes').value = candidate.notes;
-                
-                // Switch to form tab and change button text
-                switchTab('log');
-                document.getElementById('submit-btn').innerHTML = "<span>📝 Update Candidate</span>";
-                showToast("Candidate info populated in form.");
-            }
+            const data = getDB();
+            const cand = data.find(c => c.id === id);
+            if (!cand) return;
+
+            document.getElementById('edit-id').value = cand.id;
+            document.getElementById('name').value = cand.name;
+            document.getElementById('mobile').value = cand.mobile;
+            document.getElementById('role').value = cand.role;
+            document.getElementById('shop').value = cand.shop;
+            document.getElementById('date').value = cand.date;
+            document.getElementById('email').value = cand.email;
+            document.getElementById('exp').value = cand.exp;
+            document.getElementById('cur_shop').value = cand.cur_shop;
+            document.getElementById('notes').value = cand.notes;
+
+            document.getElementById('submit-btn').innerHTML = '<span>📝 Update Record</span>';
+            showView('log');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteCandidate(id) {
-            if (confirm("Are you sure you want to delete this candidate record?")) {
-                const existing = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-                const filtered = existing.filter(c => c.id !== id);
-                localStorage.setItem(DB_KEY, JSON.stringify(filtered));
-                loadCandidates();
-                showToast("Record deleted.");
-            }
+            if (!confirm("Are you sure? This cannot be undone.")) return;
+            const data = getDB().filter(c => c.id !== id);
+            saveToDB(data);
+            renderList();
+            showToast("Record Deleted");
         }
 
-        // --- EXPORT LOGIC ---
         function downloadCSV() {
-            const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            if (data.length === 0) {
-                showToast("No data to download!", "error");
-                return;
-            }
+            const data = getDB();
+            if (data.length === 0) return showToast("No data to export", "error");
 
-            // Define headers
-            const headers = [
-                "Timestamp", "Name", "Role", "Phone", "Email", 
-                "Interview Date", "Location", "Years Exp", "Shop", "Pay Range", "Notes"
-            ];
-
-            // Convert data to CSV format
-            const csvRows = [];
-            csvRows.push(headers.join(","));
+            const headers = ["Name", "Phone", "Role", "Location", "Date", "Email", "Experience", "Notes"];
+            const csvRows = [headers.join(",")];
 
             data.forEach(c => {
                 const row = [
-                    c.timestamp || "",
-                    `"${(c.candidate_name || "").replace(/"/g, '""')}"`,
-                    `"${(c.role || "").replace(/"/g, '""')}"`,
-                    `"${(c.phone || "").replace(/"/g, '""')}"`,
-                    `"${(c.email || "").replace(/"/g, '""')}"`,
-                    c.interview_date || "",
-                    `"${(c.location || "").replace(/"/g, '""')}"`,
-                    `"${(c.years_experience || "").replace(/"/g, '""')}"`,
-                    `"${(c.current_shop || "").replace(/"/g, '""')}"`,
-                    `"${(c.pay_range || "").replace(/"/g, '""')}"`,
-                    `"${(c.notes || "").replace(/"/g, '""')}"`
+                    `"${c.name}"`, `"${c.mobile}"`, `"${c.role}"`, `"${c.shop}"`,
+                    c.date, `"${c.email}"`, `"${c.exp}"`, `"${c.notes.replace(/\n/g, ' ')}"`
                 ];
                 csvRows.push(row.join(","));
             });
 
-            const csvString = csvRows.join("\n");
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            
-            const timestamp = new Date().toISOString().split('T')[0];
-            link.setAttribute("href", url);
-            link.setAttribute("download", `caraid_candidates_${timestamp}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showToast("CSV Downloaded! ✅");
+            const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `caraid_export_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+            showToast("CSV Exported! Check Downloads.");
         }
+
+        // INIT
+        document.getElementById('date').valueAsDate = new Date();
+        runScavenger();
+        renderList();
+
     </script>
 </body>
 </html>
