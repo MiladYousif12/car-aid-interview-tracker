@@ -318,13 +318,13 @@
             <div class="logo-placeholder" style="background: none; border: none;">
                 <img src="logo.png" alt="Car Aid" class="logo-img" style="width: 120px; height: auto;">
             </div>
-            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v2.9.1</small></h1>
-            <p class="subtitle">Cloud-Synced Recruiting Dashboard</p>
+            <h1>Car Aid Interview Tracker <small style="font-size: 10px; opacity: 0.5;">v3.0</small></h1>
+            <p class="subtitle">Ultra-Sync Recruiting Dashboard</p>
             <div id="sync-status" style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
                 ☁️ Sync Status: <span id="status-text">Connecting...</span>
             </div>
             <button onclick="forceReload()" style="background: none; border: 1px solid var(--border-color); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">
-                🔄 Force Hard Reload (Hyper-Sync v2.9)
+                🔄 Force Hard Reload (Ultra-Sync v3.0)
             </button>
             <div id="nw-warning" style="display:none; font-size:11px; color:#f87171; background:rgba(248,113,113,0.1); padding:8px; border-radius:8px; margin-top:12px;">
                 ⚠️ <b>Network Block Detected:</b> Your Wi-Fi or VPN is blocking Google. Try switching to LTE/Data.
@@ -484,7 +484,7 @@
         }
 
 -        logDebug("Car Aid Tracker v2.8 initialized.");
-+        logDebug("Car Aid Tracker v2.9.1 [Hyper-Sync] initialized.");
++        logDebug("Car Aid Tracker v3.0 [Ultra-Sync Proxy] initialized.");
 
         // --- UTILITY LOGIC ---
         function fillAndGlow(id, value) {
@@ -648,7 +648,7 @@
             }
         });
 
-        // --- HYPER-RELIABLE SYNC (v2.9) ---
+        // --- ULTRA-SYNC v3.0 (PROXY BYPASS) ---
         function loadCandidates() {
             const list = document.getElementById('candidates-list');
             const nwWarning = document.getElementById('nw-warning');
@@ -658,45 +658,48 @@
             renderList(cached);
             logDebug(`[Cache] Loaded ${cached.length} records.`);
 
-            updateSyncUI('pending', 'Hyper-Syncing (v2.9)...');
+            updateSyncUI('pending', 'Ultra-Syncing (v3.0)...');
             
-            // 2. Prep JSONP with Cache-Busting
+            // 2. Prep Proxy Handshake
             const t = Date.now();
-            const callbackName = 'hp_cb_' + t;
-            logDebug(`[Sync] Requesting Unique ID: ${t}`);
+            const callbackName = 'ultra_cb_' + t;
+            logDebug(`[Sync] Initiating Proxy Bridge: ${t}`);
 
-            // Safety Timeout (10 seconds)
+            // Safety Timeout (12 seconds)
             const syncTimeout = setTimeout(() => {
                 if (window[callbackName]) {
-                    logDebug("[Error] Sync Timeout: Network is blocked.");
-                    updateSyncUI('error', 'Sync Timed Out (Check VPN/Wi-Fi)');
+                    logDebug("[Error] Sync Timeout: Firewalled.");
+                    updateSyncUI('error', 'Sync Timed Out (Proxy Offline)');
                     if (nwWarning) nwWarning.style.display = 'block';
                     delete window[callbackName];
                 }
-            }, 10000);
+            }, 12000);
 
             window[callbackName] = function(cloudData) {
                 clearTimeout(syncTimeout);
-                logDebug(`[Success] Synced ${cloudData.length} records from Google.`);
+                logDebug(`[Success] Bridge OK: Synced ${cloudData.length} records.`);
                 if (nwWarning) nwWarning.style.display = 'none';
                 
                 localStorage.setItem(DB_KEY, JSON.stringify(cloudData));
                 renderList(cloudData);
-                updateSyncUI('ok', 'Connected & Synced (Hyper-Sync)');
+                updateSyncUI('ok', 'Connected (Ultra-Sync Proxy)');
                 
                 delete window[callbackName];
                 const oldScript = document.getElementById(callbackName);
                 if (oldScript) oldScript.remove();
             };
 
-            // 3. Inject "Stealth" Script with Cache-Busting
+            // 3. Inject "Bridge" Script via AllOrigins Proxy
             const script = document.createElement('script');
             script.id = callbackName;
-            script.src = `${SCRIPT_URL}?callback=${callbackName}&t=${t}&r=${Math.random()}`;
+            // Using allorigins proxy to bypass firewall detection of script.google.com
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(SCRIPT_URL + '?callback=' + callbackName + '&t=' + t)}&callback=${callbackName}`;
+            
+            script.src = proxyUrl;
             script.onerror = () => {
                 clearTimeout(syncTimeout);
-                logDebug("[Error] Network Block: Connection Cut.");
-                updateSyncUI('error', 'Sync Blocked (Try LTE/Data)');
+                logDebug("[Error] Bridge Failure.");
+                updateSyncUI('error', 'Bridge Blocked');
                 if (nwWarning) nwWarning.style.display = 'block';
             };
             document.body.appendChild(script);
