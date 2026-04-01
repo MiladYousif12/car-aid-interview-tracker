@@ -13,7 +13,7 @@ jobs:
 
       - name: Fetch Latest Candidates
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbycB1w3lV_qpVTfOAXwaB49d79X82s1AVqdIc7delAfgU3ixl3PhpChefKzTiN1DHTL4w/exec" -o candidates.json
+          curl -L "https://script.google.com/macros/s/AKfycbwaC1bX0BPlLrPrwaVg29mk7A70vGaGtRgncAyLzCWWoB3Ku2hRxVZUxXXjXC2o27IFwQ/exec" -o candidates.json
 
       - name: Commit and Push
         run: |
