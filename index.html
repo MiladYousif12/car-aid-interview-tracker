@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Interview Tracker | Car Aid Recruiting</title>
+    <title>Professional Interview Tracker | Car Aid Recruiting</title>
     <!-- Google Fonts: Inter & Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -14,6 +14,7 @@
             --accent-blue-glow: rgba(37, 99, 235, 0.4);
             --accent-green: #10b981;
             --accent-green-glow: rgba(16, 185, 129, 0.2);
+            --accent-orange: #f59e0b;
             --text-main: #f0f6fc;
             --text-dim: #8b949e;
             --border-color: #30363d;
@@ -46,7 +47,7 @@
         /* --- UI COMPONENTS --- */
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             animation: fadeIn 0.5s ease-out;
         }
 
@@ -55,10 +56,10 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 24px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-bottom: 80px; /* Space for bottom nav */
+            margin-bottom: 80px; 
         }
 
         header {
@@ -73,12 +74,11 @@
         .logo-img {
             max-width: 140px;
             height: auto;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
         }
 
         h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 22px;
+            font-size: 24px;
             letter-spacing: -0.5px;
             margin-bottom: 4px;
         }
@@ -104,20 +104,20 @@
             display: flex;
             background: rgba(0, 0, 0, 0.2);
             padding: 4px;
-            border-radius: 14px;
+            border-radius: 16px;
             margin-bottom: 24px;
             border: 1px solid var(--border-color);
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
             color: var(--text-dim);
             font-weight: 600;
             font-size: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -150,7 +150,7 @@
 
         .parse-textarea {
             width: 100%;
-            height: 90px;
+            height: 100px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -182,18 +182,25 @@
         .magic-btn:active { transform: scale(0.98); }
 
         /* Form Controls */
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 0px;
+        }
+
         .form-group {
             margin-bottom: 18px;
+            flex: 1;
         }
 
         label {
             display: block;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 6px;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .required-star { color: var(--error-red); margin-left: 2px; }
@@ -205,7 +212,7 @@
             border: 1px solid var(--border-color);
             border-radius: 14px;
             color: var(--text-main);
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
             transition: all 0.2s;
         }
@@ -213,13 +220,6 @@
         input:focus {
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 4px var(--accent-blue-glow);
-        }
-
-        .error-msg {
-            color: var(--error-red);
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
         }
 
         .submit-btn {
@@ -230,14 +230,16 @@
             border-radius: 14px;
             padding: 18px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* --- VIEWS --- */
@@ -247,37 +249,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .count-badge {
             background: var(--border-color);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .download-btn {
-            background: var(--accent-green-glow);
-            color: var(--accent-green);
-            border: 1px solid var(--accent-green);
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .candidate-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
             position: relative;
             overflow: hidden;
         }
@@ -290,98 +278,91 @@
             background: var(--accent-blue);
         }
 
-        .cand-header {
+        .cand-name-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .cand-name { font-size: 18px; font-weight: 700; color: white; }
-        .cand-role { 
-            font-size: 10px; 
-            font-weight: 700; 
+        .cand-full-name { font-size: 19px; font-weight: 800; color: white; }
+        .cand-header-badge { 
+            font-size: 9px; 
+            font-weight: 800; 
             color: var(--accent-blue); 
             text-transform: uppercase; 
-            letter-spacing: 1px;
             background: var(--accent-blue-glow);
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
         }
 
-        .cand-info {
+        .cand-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 8px 16px;
             font-size: 13px;
             color: var(--text-dim);
+            margin-top: 12px;
         }
 
-        .cand-item { display: flex; align-items: center; gap: 6px; }
+        .grid-item { display: flex; align-items: flex-start; gap: 8px; }
+        .grid-item span { color: var(--text-main); font-weight: 600; }
 
         .cand-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 10px;
-            margin-top: 16px;
+            margin-top: 20px;
             border-top: 1px solid var(--border-color);
-            padding-top: 12px;
+            padding-top: 16px;
         }
 
         .action-btn {
-            flex: 1;
-            padding: 8px;
+            padding: 10px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-transform: uppercase;
         }
-        .btn-edit { background: rgba(37, 99, 235, 0.1); color: var(--accent-blue); }
-        .btn-del { background: rgba(248, 113, 113, 0.1); color: var(--error-red); }
+        .btn-copy { background: var(--accent-orange); color: white; }
+        .btn-edit { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-del { background: rgba(248, 113, 113, 0.05); color: var(--error-red); border: 1px solid rgba(248, 113, 113, 0.2); }
 
         /* Toast */
         #toast {
             position: fixed;
-            bottom: 100px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--accent-green);
             color: white;
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 50px;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            font-weight: 800;
+            font-size: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             display: none;
             z-index: 2000;
+            white-space: nowrap;
         }
 
-        /* Parsing Success Animation */
         @keyframes fieldGlow {
             0% { border-color: var(--accent-green); background: var(--accent-green-glow); }
             100% { border-color: var(--border-color); background: var(--input-bg); }
         }
-        .parsed-field { animation: fieldGlow 2s forwards; }
+        .parsed-field { animation: fieldGlow 1.5s forwards; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Debug Footer */
-        .debug-log {
-            margin-top: 20px;
-            font-family: monospace;
-            font-size: 9px;
-            color: #4ade80;
-            padding: 10px;
-            background: #000;
-            border-radius: 8px;
-            max-height: 100px;
-            overflow-y: auto;
-            display: none;
-        }
-        
     </style>
 </head>
 <body>
@@ -394,103 +375,116 @@
                 <div class="logo-container">
                     <img src="logo.png" alt="Car Aid" class="logo-img" onerror="this.src='https://placehold.co/140x50/161b22/f0f6fc?text=CAR+AID'">
                 </div>
-                <h1>Interview Tracker <span class="version-badge">v3.0.0 [Local]</span></h1>
-                <p class="subtitle">Secure Candidate Database</p>
+                <h1>Interview Tracker <span class="version-badge">v3.1.0 [Upgrade]</span></h1>
+                <p class="subtitle">Professional Recruiting Dashboard</p>
             </header>
 
             <div class="tabs">
-                <button class="tab-btn active" id="tab-log" onclick="showView('log')">Log Interview</button>
+                <button class="tab-btn active" id="tab-log" onclick="showView('log')">Log Candidate</button>
                 <button class="tab-btn" id="tab-view" onclick="showView('list')">Database</button>
             </div>
 
-            <!-- VIEW 1: LOGGING FORM -->
+            <!-- LOGGING VIEW -->
             <div id="view-log">
                 <div class="smart-parse-box">
-                    <div class="box-header">
-                        <span>🪄 Smart Parse (Paste Summary)</span>
-                    </div>
-                    <textarea id="raw-text" class="parse-textarea" placeholder="Paste candidate text here... (Smart detection enabled)"></textarea>
-                    <button class="magic-btn" onclick="runSmartParse()">✨ Magic Auto-Fill</button>
+                    <div class="box-header"><span>🪄 Magic Auto-Fill (Paste Brief)</span></div>
+                    <textarea id="raw-text" class="parse-textarea" placeholder="Paste Evans/Jacob summary here..."></textarea>
+                    <button class="magic-btn" onclick="runSmartParse()">✨ Magic Auto-Fill Form</button>
                 </div>
 
                 <form id="candidate-form">
                     <input type="hidden" id="edit-id">
                     
-                    <div class="form-group">
-                        <label>Candidate Name <span class="required-star">*</span></label>
-                        <input type="text" id="name" placeholder="Full Name" required>
-                        <div class="error-msg" id="name-error">Name is required</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name <span class="required-star">*</span></label>
+                            <input type="text" id="first_name" placeholder="John" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name <span class="required-star">*</span></label>
+                            <input type="text" id="last_name" placeholder="Doe" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Phone Number <span class="required-star">*</span></label>
-                        <input type="tel" id="mobile" placeholder="(555) 000-0000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Shop Location <span class="required-star">*</span></label>
-                        <input type="text" id="shop" placeholder="Waterford, Troy, etc." required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number <span class="required-star">*</span></label>
+                            <input type="tel" id="mobile" placeholder="313-555-0000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Shop Location <span class="required-star">*</span></label>
+                            <input type="text" id="shop" placeholder="Southfield, Waterford..." required>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label>Candidate Role <span class="required-star">*</span></label>
-                        <input type="text" id="role" placeholder="Service Advisor, Tech..." required>
+                        <input type="text" id="role" placeholder="A-Level Technician, Advisor..." required>
                     </div>
 
-                    <div class="form-group">
-                        <label>Int Date</label>
-                        <input type="date" id="date">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email (Optional)</label>
-                        <input type="email" id="email" placeholder="email@domain.com">
-                    </div>
-
-                    <div class="form-row" style="display:flex; gap:12px;">
-                        <div class="form-group" style="flex:1">
-                            <label>Experience</label>
-                            <input type="text" id="exp" placeholder="5+ Years">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Years Experience</label>
+                            <input type="text" id="exp" placeholder="10+ years">
                         </div>
-                        <div class="form-group" style="flex:1">
+                        <div class="form-group">
                             <label>Current Shop</label>
-                            <input type="text" id="cur_shop" placeholder="Dealership">
+                            <input type="text" id="cur_shop" placeholder="Inc Technology">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ALC / ASE Status</label>
+                            <input type="text" id="alc_status" placeholder="Working toward cert">
+                        </div>
+                        <div class="form-group">
+                            <label>Avg RO Size</label>
+                            <input type="text" id="ro_size" placeholder="$1,200+">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" placeholder="clarence@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Interview Date</label>
+                            <input type="date" id="date">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Specialty & Notes</label>
-                        <textarea id="notes" rows="3" placeholder="Additional notes..."></textarea>
+                        <label>Additional Notes</label>
+                        <textarea id="notes" rows="2" placeholder="Start date, specialty, etc."></textarea>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submit-btn">
-                        <span>🚀 Log Candidate</span>
+                        <span>🚀 Log & Save Candidate</span>
                     </button>
                 </form>
             </div>
 
-            <!-- VIEW 2: DATABASE LIST -->
+            <!-- DATABASE VIEW -->
             <div id="view-list">
                 <div class="list-header">
-                    <div class="count-badge"><span id="db-count">0</span> Candidates</div>
-                    <button class="download-btn" onclick="downloadCSV()">📥 Download CSV Export</button>
+                    <div class="count-badge"><span id="db-count">0</span> Registered Candidates</div>
+                    <button class="download-btn" onclick="downloadCSV()">📥 Export All (CSV)</button>
                 </div>
-                <div id="candidate-container">
-                    <!-- Cards injected here -->
-                </div>
+                <div id="candidate-container"></div>
             </div>
 
-            <footer style="text-align:center; margin-top:30px; font-size:11px; color:var(--text-dim);">
-                Car Aid Automated Gateway • Pure Local Mode<br>
-                <div id="debug" class="debug-log"></div>
+            <footer style="text-align:center; margin-top:30px; font-size:11px; color:var(--text-dim); opacity: 0.6;">
+                Car Aid Automated Recruiting System v3.1.0<br>
+                Secure Local Storage Active
             </footer>
         </div>
     </div>
 
     <script>
-        // --- CORE DATABASE ---
-        const DB_NAME = 'caraid_candidates_v3'; // Fresh start v3 key
-        const OLD_KEYS = ['caraid_candidates', 'caraid_candidates_v1', 'caraid_db', 'interview_tracker_db'];
+        const DB_NAME = 'caraid_candidates_v3_1'; 
+        const LEGACY_KEYS = ['caraid_candidates_v3', 'caraid_candidates_v1', 'caraid_candidates'];
 
         function getDB() {
             return JSON.parse(localStorage.getItem(DB_NAME) || '[]');
@@ -500,36 +494,44 @@
             localStorage.setItem(DB_NAME, JSON.stringify(data));
         }
 
-        // --- THE MASTER SCAVENGER ---
+        // --- MASTER SCAVENGER (v3.1 aware) ---
         function runScavenger() {
-            logDebug("Starting Master Scavenger...");
             let recovered = 0;
             const current = getDB();
-            const currentIds = new Set(current.map(c => c.id || c.name + c.mobile));
+            const currentIds = new Set(current.map(c => c.id));
 
-            OLD_KEYS.forEach(key => {
+            LEGACY_KEYS.forEach(key => {
                 try {
-                    const oldData = JSON.parse(localStorage.getItem(key));
-                    if (oldData && Array.isArray(oldData)) {
-                        oldData.forEach(item => {
-                            // Standardize keys from older versions
-                            const normalized = {
-                                id: item.id || Date.now() + Math.random(),
-                                name: item.name || item.candidate_name || "Unknown",
-                                mobile: item.mobile || item.phone || "",
-                                role: item.role || "Technician",
-                                shop: item.shop || item.location || "Southfield",
-                                date: item.date || item.interview_date || new Date().toISOString().split('T')[0],
-                                email: item.email || "",
-                                exp: item.exp || item.years_experience || "",
-                                cur_shop: item.cur_shop || item.current_shop || "",
-                                notes: item.notes || ""
-                            };
-                            
-                            const signature = normalized.name + normalized.mobile;
-                            if (!currentIds.has(signature)) {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && Array.isArray(data)) {
+                        data.forEach(item => {
+                            if (!currentIds.has(item.id)) {
+                                // Map old name to first/last if needed
+                                let fName = item.first_name || item.name || item.candidate_name || "Unknown";
+                                let lName = item.last_name || "";
+                                if (!item.first_name && (item.name || item.candidate_name)) {
+                                    const parts = (item.name || item.candidate_name).split(' ');
+                                    fName = parts[0];
+                                    lName = parts.slice(1).join(' ');
+                                }
+
+                                const normalized = {
+                                    id: item.id || Date.now() + Math.random(),
+                                    first_name: fName,
+                                    last_name: lName,
+                                    mobile: item.mobile || item.phone || "",
+                                    email: item.email || "",
+                                    shop: item.shop || item.location || "Southfield",
+                                    role: item.role || "Technician",
+                                    exp: item.exp || item.years_experience || "",
+                                    cur_shop: item.cur_shop || item.current_shop || "",
+                                    alc_status: item.alc_status || "",
+                                    ro_size: item.ro_size || "",
+                                    date: item.date || item.interview_date || new Date().toISOString().split('T')[0],
+                                    notes: item.notes || ""
+                                };
                                 current.push(normalized);
-                                currentIds.add(signature);
+                                currentIds.add(normalized.id);
                                 recovered++;
                             }
                         });
@@ -539,70 +541,55 @@
 
             if (recovered > 0) {
                 saveToDB(current);
-                logDebug(`Scavenger found ${recovered} candidates! 🎉`);
-                showToast(`Recovered ${recovered} Candidates! 🎉`);
+                showToast(`SUCCESS: Recovered ${recovered} Candidates! 🎉`);
                 renderList();
-            } else {
-                logDebug("No data found in older versions.");
             }
         }
 
-        // --- SMART PARSE ENGINE ---
+        // --- SMART PARSE 2.0 (Label-Specific) ---
         function runSmartParse() {
             const text = document.getElementById('raw-text').value;
-            if (!text.trim()) return showToast("Paste text first!", "error");
+            if (!text.trim()) return showToast("Paste summary first!", "error");
 
-            logDebug("Running Smart Parse...");
-            const textLower = text.toLowerCase();
             let found = 0;
+            const textLines = text.split('\n');
 
-            // 1. Phone Detection (Robust regex for 555-555-5555 formats)
-            const phoneMatch = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
-            if (phoneMatch && setField('mobile', phoneMatch[0])) found++;
+            const mappings = {
+                first_name: /(?:First Name):\s*([^\n\r]+)/i,
+                last_name: /(?:Last Name):\s*([^\n\r]+)/i,
+                mobile: /(?:Phone Number|Phone):\s*([^\n\r]+)/i,
+                email: /(?:Email Address|Email):\s*([^\n\r]+)/i,
+                shop: /(?:Shop Location):\s*([^\n\r]+)/i,
+                exp: /(?:Years Experience):\s*([^\n\r]+)/i,
+                cur_shop: /(?:Current Shop):\s*([^\n\r]+)/i,
+                alc_status: /(?:ALC Status|ASE Status):\s*([^\n\r]+)/i,
+                ro_size: /(?:Average RO Size):\s*([^\n\r]+)/i
+            };
 
-            // 2. Role Detection (Keywords)
-            if (textLower.includes('advisor')) { if (setField('role', 'Service Advisor')) found++; }
-            else if (textLower.includes('tech') || textLower.includes('technician')) { if (setField('role', 'A-Level Technician')) found++; }
+            // Heuristic Role (First line or major keyword)
+            const roleMatch = text.match(/(?:A-Level Technician|Service Advisor)/i);
+            if (roleMatch && setField('role', roleMatch[0])) found++;
 
-            // 3. Location Detection
-            const locs = ['Waterford', 'Southfield', 'Utica', 'Shelby', 'Waterford'];
-            for (const loc of locs) {
-                if (textLower.includes(loc.toLowerCase())) {
-                    if (setField('shop', loc)) found++;
-                    break;
-                }
+            for (const [id, regex] of Object.entries(mappings)) {
+                const match = text.match(regex);
+                if (match && setField(id, match[1])) found++;
             }
 
-            // 4. Name Detection (Heuristic: Lines that look like "First Last" or "Name: John")
-            const nameMatch = text.match(/(?:Name|Candidate):\s*([^\n\r]+)/i);
-            if (nameMatch) {
-                if (setField('name', nameMatch[1])) found++;
-            } else {
-                // Fallback: try first line if it's short
-                const firstLine = text.split('\n')[0].trim();
-                if (firstLine.length < 30 && firstLine.split(' ').length >= 2) {
-                    if (setField('name', firstLine)) found++;
-                }
+            // Fallback for phone if no label
+            if (!document.getElementById('mobile').value) {
+                const genericPhone = text.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+                if (genericPhone && setField('mobile', genericPhone[0])) found++;
             }
 
-            // 5. Exp & Shop
-            const expMatch = text.match(/(?:Exp|Years|Experience):\s*([^\n\r]+)/i);
-            if (expMatch) setField('exp', expMatch[1]);
-
-            if (found > 0) showToast(`Smart Fill: Populated ${found} fields!`);
-            else showToast("No clear info found in text.", "error");
+            if (found > 0) showToast(`✨ Magic Fill: Found ${found} details!`);
         }
 
-        // --- UI HANDLERS ---
+        // --- UI CORE ---
         function showView(view) {
-            const views = { log: 'view-log', list: 'view-list' };
-            const tabs = { log: 'tab-log', list: 'tab-view' };
-            
-            Object.keys(views).forEach(k => {
-                document.getElementById(views[k]).style.display = k === view ? 'block' : 'none';
-                document.getElementById(tabs[k]).className = 'tab-btn' + (k === view ? ' active' : '');
-            });
-
+            document.getElementById('view-log').style.display = view === 'log' ? 'block' : 'none';
+            document.getElementById('view-list').style.display = view === 'list' ? 'block' : 'none';
+            document.getElementById('tab-log').className = 'tab-btn' + (view === 'log' ? ' active' : '');
+            document.getElementById('tab-view').className = 'tab-btn' + (view === 'list' ? ' active' : '');
             if (view === 'list') renderList();
         }
 
@@ -611,63 +598,49 @@
             if (!el || !val) return false;
             el.value = val.trim();
             el.classList.add('parsed-field');
-            setTimeout(() => el.classList.remove('parsed-field'), 2000);
+            setTimeout(() => el.classList.remove('parsed-field'), 1500);
             return true;
         }
 
-        function showToast(msg, type = 'success') {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
-            toast.style.background = type === 'success' ? 'var(--accent-green)' : 'var(--error-red)';
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        function logDebug(msg) {
-            const db = document.getElementById('debug');
-            // db.style.display = 'block'; // Uncomment to see live logs in UI
-            db.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-            db.scrollTop = db.scrollHeight;
-        }
-
-        function forceReload() {
-            window.location.href = window.location.pathname + '?refresh=' + Date.now();
-        }
-
-        // --- FORM LOGIC ---
+        // --- DATABASE OPS ---
         document.getElementById('candidate-form').onsubmit = function(e) {
             e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.innerHTML = '⚡ Saving...';
-            
             const candidate = {
                 id: document.getElementById('edit-id').value || Date.now().toString(),
-                name: document.getElementById('name').value,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
                 mobile: document.getElementById('mobile').value,
-                role: document.getElementById('role').value,
                 shop: document.getElementById('shop').value,
-                date: document.getElementById('date').value,
-                email: document.getElementById('email').value,
+                role: document.getElementById('role').value,
                 exp: document.getElementById('exp').value,
                 cur_shop: document.getElementById('cur_shop').value,
+                alc_status: document.getElementById('alc_status').value,
+                ro_size: document.getElementById('ro_size').value,
+                email: document.getElementById('email').value,
+                date: document.getElementById('date').value,
                 notes: document.getElementById('notes').value
             };
 
             const data = getDB();
-            const index = data.findIndex(c => c.id === candidate.id);
-            
-            if (index > -1) data[index] = candidate;
+            const idx = data.findIndex(c => c.id === candidate.id);
+            if (idx > -1) data[idx] = candidate;
             else data.unshift(candidate);
 
             saveToDB(data);
-            showToast("Candidate Saved Successfully!");
+            showToast("Success! Candidate Saved Locally ✅");
             
             this.reset();
             document.getElementById('edit-id').value = "";
-            document.getElementById('submit-btn').innerHTML = '<span>🚀 Log Candidate</span>';
+            document.getElementById('submit-btn').innerHTML = '<span>🚀 Log & Save Candidate</span>';
             document.getElementById('date').valueAsDate = new Date();
-            
-            setTimeout(() => showView('list'), 500);
+            setTimeout(() => showView('list'), 400);
         };
 
         function renderList() {
@@ -676,88 +649,118 @@
             document.getElementById('db-count').innerText = data.length;
 
             if (data.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:50px; color:var(--text-dim);">No candidates in database yet.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:60px; opacity:0.4;">Database is empty</div>`;
                 return;
             }
 
             container.innerHTML = data.map(c => `
                 <div class="candidate-card">
-                    <div class="cand-header">
-                        <div class="cand-name">${c.name}</div>
-                        <div class="cand-role">${c.role}</div>
+                    <div class="cand-name-row">
+                        <div class="cand-full-name">${c.first_name} ${c.last_name}</div>
+                        <div class="cand-header-badge">${c.role}</div>
                     </div>
-                    <div class="cand-info">
-                        <div class="cand-item">📞 ${c.mobile}</div>
-                        <div class="cand-item">📍 ${c.shop}</div>
-                        <div class="cand-item">📅 ${c.date}</div>
-                        ${c.email ? `<div class="cand-item">✉️ Email set</div>` : ''}
+                    <div class="cand-grid">
+                        <div class="grid-item">📞 <span>${c.mobile}</span></div>
+                        <div class="grid-item">📍 <span>${c.shop}</span></div>
+                        <div class="grid-item">🏢 <span>${c.cur_shop || 'N/A'}</span></div>
+                        <div class="grid-item">🏆 <span>${c.exp || 'N/A'}</span></div>
+                        <div class="grid-item">🛠️ <span>${c.alc_status || 'N/A'}</span></div>
+                        <div class="grid-item">💰 <span>${c.ro_size || 'N/A'}</span></div>
+                        <div class="grid-item" style="grid-column: span 2;">✉️ <span>${c.email || 'No email set'}</span></div>
                     </div>
                     <div class="cand-actions">
+                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 Copy For Owner</button>
                         <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ Edit</button>
-                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ Delete</button>
+                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ Del</button>
                     </div>
                 </div>
             `).join('');
         }
 
+        function copyBrief(id) {
+            const c = getDB().find(item => item.id === id);
+            if (!c) return;
+
+            const brief = `CANDIDATE PROFILE: ${c.first_name} ${c.last_name}
+-----------------------------
+- ROLE: ${c.role}
+- LOCATION: ${c.shop}
+- PHONE: ${c.mobile}
+- EMAIL: ${c.email || 'N/A'}
+- EXPERIENCE: ${c.exp}
+- CURRENT SHOP: ${c.cur_shop}
+- ALC/ASE STATUS: ${c.alc_status}
+- AVG RO SIZE: ${c.ro_size}
+- INT DATE: ${c.date}
+
+NOTES:
+${c.notes || 'None provided.'}`;
+
+            navigator.clipboard.writeText(brief).then(() => {
+                showToast("Summary copied to clipboard! 📋");
+            });
+        }
+
         function editCandidate(id) {
-            const data = getDB();
-            const cand = data.find(c => c.id === id);
-            if (!cand) return;
+            const c = getDB().find(item => item.id === id);
+            if (!c) return;
 
-            document.getElementById('edit-id').value = cand.id;
-            document.getElementById('name').value = cand.name;
-            document.getElementById('mobile').value = cand.mobile;
-            document.getElementById('role').value = cand.role;
-            document.getElementById('shop').value = cand.shop;
-            document.getElementById('date').value = cand.date;
-            document.getElementById('email').value = cand.email;
-            document.getElementById('exp').value = cand.exp;
-            document.getElementById('cur_shop').value = cand.cur_shop;
-            document.getElementById('notes').value = cand.notes;
+            document.getElementById('edit-id').value = c.id;
+            document.getElementById('first_name').value = c.first_name;
+            document.getElementById('last_name').value = c.last_name;
+            document.getElementById('mobile').value = c.mobile;
+            document.getElementById('shop').value = c.shop;
+            document.getElementById('role').value = c.role;
+            document.getElementById('exp').value = c.exp;
+            document.getElementById('cur_shop').value = c.cur_shop;
+            document.getElementById('alc_status').value = c.alc_status;
+            document.getElementById('ro_size').value = c.ro_size;
+            document.getElementById('email').value = c.email;
+            document.getElementById('date').value = c.date;
+            document.getElementById('notes').value = c.notes;
 
-            document.getElementById('submit-btn').innerHTML = '<span>📝 Update Record</span>';
+            document.getElementById('submit-btn').innerHTML = '<span>📝 Update Candidate</span>';
             showView('log');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteCandidate(id) {
-            if (!confirm("Are you sure? This cannot be undone.")) return;
+            if (!confirm("Are you sure?")) return;
             const data = getDB().filter(c => c.id !== id);
             saveToDB(data);
             renderList();
-            showToast("Record Deleted");
+            showToast("Candidate removed.");
         }
 
         function downloadCSV() {
             const data = getDB();
-            if (data.length === 0) return showToast("No data to export", "error");
+            if (data.length === 0) return showToast("Nothing to export");
 
-            const headers = ["Name", "Phone", "Role", "Location", "Date", "Email", "Experience", "Notes"];
-            const csvRows = [headers.join(",")];
+            const headers = ["First Name", "Last Name", "Phone", "Location", "Role", "Exp", "Current Shop", "ASE/ALC", "Avg RO", "Email", "Date"];
+            const csv = [headers.join(",")];
 
             data.forEach(c => {
                 const row = [
-                    `"${c.name}"`, `"${c.mobile}"`, `"${c.role}"`, `"${c.shop}"`,
-                    c.date, `"${c.email}"`, `"${c.exp}"`, `"${c.notes.replace(/\n/g, ' ')}"`
+                    `"${c.first_name}"`, `"${c.last_name}"`, `"${c.mobile}"`, `"${c.shop}"`,
+                    `"${c.role}"`, `"${c.exp}"`, `"${c.cur_shop}"`, `"${c.alc_status}"`,
+                    `"${c.ro_size}"`, `"${c.email}"`, c.date
                 ];
-                csvRows.push(row.join(","));
+                csv.push(row.join(","));
             });
 
-            const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `caraid_export_${new Date().toISOString().split('T')[0]}.csv`);
+            const blob = new Blob([csv.join("\n")], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `caraid_full_export_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
-            showToast("CSV Exported! Check Downloads.");
+            showToast("CSV Downloaded!");
         }
 
-        // INIT
+        // START
         document.getElementById('date').valueAsDate = new Date();
         runScavenger();
         renderList();
-
     </script>
 </body>
 </html>
