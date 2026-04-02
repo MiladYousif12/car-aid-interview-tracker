@@ -16,5 +16,7 @@
     "ase_branding": "Custom 'ASE Certified' Blue Gear Badge",
     "cache_control": "Force Hard Reload Button (top-screen)"
   },
-  "parser_logic": "Matches keywords: Service Advisor, A-Level Technician, Technician, Southfield, Waterford, Troy, Shelby Township, Utica."
+  "parser_logic": "Matches keywords: Service Advisor, A-Level Technician, Technician, Southfield, Waterford, Troy, Shelby Township, Utica.",
+  "last_maintenance": "2026-04-02",
+  "maintenance_notes": "Permanently deleted legacy sync.yml to stop error emails."
 }
