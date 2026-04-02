@@ -1,0 +1,20 @@
+{
+  "version": "3.2.1",
+  "project": "Car Aid Interview Tracker Pro",
+  "architecture": "100% Local-First (localStorage)",
+  "storage_key": "caraid_candidates_v3_1",
+  "features": [
+    "Ultra-Reliable Colon-Split Parser",
+    "Share with Owner Summary",
+    "Delete/Edit Management",
+    "CSV Data Backup"
+  ],
+  "mobile_optimizations": {
+    "viewport": "iPhone 14/15 Optimized (390px-430px)",
+    "phone_display": "Dedicated full-width row (No truncation)",
+    "icons": "Colored SVGs (Green Phone, Blue Email, Red Location)",
+    "ase_branding": "Custom 'ASE Certified' Blue Gear Badge",
+    "cache_control": "Force Hard Reload Button (top-screen)"
+  },
+  "parser_logic": "Matches keywords: Service Advisor, A-Level Technician, Technician, Southfield, Waterford, Troy, Shelby Township, Utica."
+}
