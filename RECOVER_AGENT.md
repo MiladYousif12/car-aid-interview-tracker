@@ -10,7 +10,7 @@ Everything we have built is safely stored on your GitHub account. As long as you
 1.  **Clone the Project**: Download/Clone the repository from GitHub to your new computer.
 2.  **Open in AI**: Open that folder in Antigravity (or any AI assistant).
 3.  **The "Magic Prompt"**: Simply tell the AI:
-    > "I am resuming the Car Aid Recruiting project. Please read the `.agent/` folder and `agent_config.json` to synchronize your logic with the v3.2.1 baseline."
+    > "I am resuming the Car Aid Recruiting project. Please read the `.agent/` folder and `agent_config.json` to synchronize your logic with the v3.3.5 baseline."
 
 ### 3. Why This Works
 The **`.agent/`** folder I created is a "Brain Backup." It contains:
