@@ -1,10 +1,11 @@
 {
-  "version": "3.2.1",
+  "version": "3.2.3",
   "project": "Car Aid Interview Tracker Pro",
   "architecture": "100% Local-First (localStorage)",
   "storage_key": "caraid_candidates_v3_1",
   "features": [
     "Ultra-Reliable Colon-Split Parser",
+    "Pipeline Status Tracking (Sent to Sal, Confirmed, etc.)",
     "Share with Owner Summary",
     "Delete/Edit Management",
     "CSV Data Backup"

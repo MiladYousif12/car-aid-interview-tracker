@@ -1,10 +1,14 @@
-# Session Log: Car Aid Recruiting Pro v3.2.1
+# Session Log: Car Aid Recruiting Pro v3.2.3
 
 ## Summary
-Successfully overhauled the Car Aid Interview Tracker into a professional, mobile-optimized, local-first recruiting tool.
+Overhauled status management with 1-tap card updates and color-coded pipeline tracking.
 
-## Key Accomplishments (Updated April 2, 2026)
-1.  **Logic Fix**: Replaced fragile regex with a **line-by-line colon-split engine**.
+## Key Accomplishments (Updated April 6, 2026)
+1.  **Pipeline Status Tracking (v3.2.3)**:
+    *   Added **Sent To Sal**, **Interview Confirmed**, **Rejected**, and **Hired**.
+    *   Implemented **Quick-Toggle Dropdowns** directly on candidate cards for 1-tap updates.
+    *   Added emoji-supported labels for high-visibility mobile tracking.
+2.  **Logic Fix**: Replaced fragile regex with a **line-by-line colon-split engine**.
 2.  **Performance Fix**: Moved to **100% Local-First** (`localStorage`) to avoid cellular network "Sync Blocked" errors.
 3.  **UI/UX Polish**:
     *   Integrated blue gear **ASE badge**.
@@ -18,11 +22,14 @@ Successfully overhauled the Car Aid Interview Tracker into a professional, mobil
 5.  **Maintenance**:
     *   **Silenced Sync Errors**: Permanently deleted and pushed the removal of the old `sync.yml` GitHub workflow to stop "Cloud Sheet Sync Relay" failure emails. This confirms the app is now completely independent of legacy cloud scripts.
 
+# Next Actions: Car Aid Recruiting Pro v3.2.3
+
 ## Priority Resume Points
-1.  **Monitor Parser Accuracy**: Verify "Magic Scan" against any new Evans/Jacob summary formats.
-2.  **Field Expansion**: Consider splitting **"Interview Location"** or **"Interview Time"** into dedicated fields.
-3.  **Role Filters**: Add a toggle for **"Service Advisor"** vs. **"Technician"** views.
-4.  **Data Backup**: Remind the user to use the "📥 DOWNLOAD CSV" feature weekly.
+1.  **Status Workflow**: Monitor if "Sent to Sal" vs "Interview Confirmed" workflow meets daily needs.
+2.  **Monitor Parser Accuracy**: Verify "Magic Scan" against any new Evans/Jacob summary formats.
+3.  **Field Expansion**: Consider splitting **"Interview Location"** or **"Interview Time"** into dedicated fields.
+4.  **Role Filters**: Add a toggle for **"Service Advisor"** vs. **"Technician"** views.
+5.  **Data Backup**: Remind the user to use the "📥 DOWNLOAD CSV" feature weekly.
 
 ## Future Road Map
 - **Automated Texting**: Integrate `sms:` links directly into the candidate card.
