@@ -292,72 +292,100 @@
         async function downloadStatusTemplate() {
             const data = getDB();
             if (data.length === 0) return showToast("No candidates found.", true);
-            showToast("Generating Numbers-friendly Excel...");
+            showToast("⏳ Building Numbers-Ready file...");
 
             try {
                 const workbook = new ExcelJS.Workbook();
-                const mainSheet = workbook.addWorksheet('Status Update');
-                const listSheet = workbook.addWorksheet('__DATA__'); // Hidden sheet for compatibility
-                listSheet.state = 'veryHidden';
+                const sheet = workbook.addWorksheet('Status Update');
 
-                // 1. Setup Status Options in Hidden Sheet
-                const statusOptions = [
-                    "Interview set up",
-                    "Interview complete",
-                    "Offer made",
-                    "Hired",
-                    "Rejected",
-                    "No Show/No Response"
-                ];
-                statusOptions.forEach((opt, i) => listSheet.getCell(`A${i+1}`).value = opt);
-
-                // 2. Setup Main Sheet Columns
-                mainSheet.columns = [
-                    { header: 'Candidate Name', key: 'name', width: 35 },
-                    { header: 'Status', key: 'status', width: 30 }
+                // COLUMN LAYOUT
+                sheet.columns = [
+                    { key: 'name',   width: 30 },
+                    { key: 'role',   width: 22 },
+                    { key: 'shop',   width: 20 },
+                    { key: 'phone',  width: 18 },
+                    { key: 'status', width: 28 },
+                    { key: 'notes',  width: 35 },
                 ];
 
-                // 3. Add Candidates
-                const statusList = [
-                    "Interview set up",
-                    "Interview complete",
-                    "Offer made",
-                    "Hired",
-                    "Rejected",
-                    "No Show/No Response"
-                ];
+                // ROW 1: INSTRUCTION BANNER
+                const instrRow = sheet.addRow(['📱 TAP the STATUS cell → tap again to pick from the dropdown list', '', '', '', '', '']);
+                sheet.mergeCells('A1:F1');
+                instrRow.getCell(1).font  = { bold: true, size: 12, color: { argb: 'FF1E3A5F' } };
+                instrRow.getCell(1).fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6E4F7' } };
+                instrRow.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+                instrRow.height = 28;
 
-                data.forEach(c => {
-                    const name = `${c.first_name || ''} ${c.last_name || ''}`.trim();
-                    const row = mainSheet.addRow({ name: name, status: "" });
-                    
-                    // APPLE NUMBERS FIX: Use literal list string, NOT range reference
-                    const statusCell = row.getCell(2);
-                    statusCell.dataValidation = {
-                        type: 'list',
-                        allowBlank: true,
-                        formulae: [`"${statusList.join(',')}"`]
+                // ROW 2: HEADER ROW
+                const headerRow = sheet.addRow(['Candidate Name', 'Role', 'Shop', 'Phone', '▼ STATUS (Tap Here)', 'Notes']);
+                headerRow.eachCell(cell => {
+                    cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 13 };
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2563EB' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = { bottom: { style: 'medium', color: { argb: 'FF1A4AB5' } } };
+                });
+                headerRow.height = 32;
+
+                // DATA ROWS
+                const firstDataRow = 3;
+                data.forEach((c, i) => {
+                    const row = sheet.addRow([
+                        `${c.first_name || ''} ${c.last_name || ''}`.trim(),
+                        c.role   || '',
+                        c.shop   || '',
+                        c.mobile || '',
+                        '',
+                        c.notes || ''
+                    ]);
+
+                    // Alternating row color
+                    const bg = i % 2 === 0 ? 'FFF8FAFF' : 'FFEFF4FF';
+                    row.eachCell(cell => {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+                        cell.alignment = { vertical: 'middle', wrapText: true };
+                    });
+
+                    // Highlight the STATUS cell yellow so it's obvious
+                    const statusCell = row.getCell(5);
+                    statusCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFBE6' } };
+                    statusCell.border = {
+                        top:    { style: 'thin', color: { argb: 'FFFFC107' } },
+                        bottom: { style: 'thin', color: { argb: 'FFFFC107' } },
+                        left:   { style: 'thin', color: { argb: 'FFFFC107' } },
+                        right:  { style: 'thin', color: { argb: 'FFFFC107' } }
                     };
-                    
-                    // Fallback cell note for manual entry
-                    statusCell.note = "OPTIONS:\n- " + statusList.join('\n- ');
+                    row.height = 26;
                 });
 
-                // 4. Header Styling
-                mainSheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-                mainSheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2563EB' } };
+                const lastDataRow = firstDataRow + data.length - 1;
 
-                // 5. Finalize & Export
+                // KEY FIX: ONE range-based rule instead of per-cell rules
+                // This is what makes Numbers show dropdowns on EVERY row reliably
+                sheet.dataValidations.add(`E${firstDataRow}:E${lastDataRow}`, {
+                    type: 'list',
+                    allowBlank: true,
+                    formulae: ['"Interview set up,Interview complete,Offer made,Hired,Rejected,No Show/No Response"'],
+                    showErrorMessage: false,
+                    showInputMessage: true,
+                    promptTitle: 'Pick a Status',
+                    prompt: 'Tap to select: Interview set up / Interview complete / Offer made / Hired / Rejected / No Show'
+                });
+
+                // Freeze top 2 rows so headers stay visible while scrolling
+                sheet.views = [{ state: 'frozen', ySplit: 2 }];
+
+                // EXPORT
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Recruiting_Status_Sal_${new Date().toLocaleDateString()}.xlsx`;
+                a.download = `Sal_Status_${new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}).replace(/\//g,'-')}.xlsx`;
                 a.click();
-                showToast("📋 Excel Ready for Numbers!");
+                showToast("✅ Open in Numbers → Tap yellow STATUS cell → Tap again for dropdown!");
             } catch (e) {
                 console.error(e);
+
                 showToast("Excel Export Failed", true);
             }
         }
