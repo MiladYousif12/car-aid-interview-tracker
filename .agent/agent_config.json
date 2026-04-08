@@ -1,15 +1,37 @@
 {
-  "version": "3.3.5",
+  "version": "3.4.0",
   "project": "Car Aid Interview Tracker Pro",
   "architecture": "100% Local-First (localStorage)",
   "storage_key": "caraid_candidates_v3_1",
+  "active_github_pages_url": "https://miladyousif12.github.io/car-aid-interview-tracker/",
+  "active_repo": "https://github.com/MiladYousif12/car-aid-interview-tracker",
   "features": [
-    "Ultra-Reliable Colon-Split Parser",
-    "Pipeline Status Tracking (Sent to Sal, Confirmed, etc.)",
-    "Share with Owner Summary",
-    "Delete/Edit Management",
-    "CSV Data Backup"
+    "Ultra-Reliable Colon-Split Parser (Magic Scan)",
+    "Pipeline Status Tracking (1-tap on candidate cards)",
+    "🏆 Hired Team Tab — live auto-filter, gold/green theme",
+    "📋 Database Tab — full candidate list with real-time search",
+    "✍️ New Interview Tab — smart parse + manual form",
+    "Sal's Excel Export (.xlsx) — Numbers-compatible with range-based dropdowns",
+    "CSV Import/Export — bulk ingestion and backup",
+    "Emergency Data Recovery Zone (legacy v3.1)",
+    "Share Candidate Brief (clipboard)",
+    "Delete/Edit Management"
   ],
+  "excel_export_logic": {
+    "method": "Range-based single validation rule (sheet.dataValidations.add)",
+    "range": "E{firstDataRow}:E{lastDataRow}",
+    "formula": "Literal comma-separated string — NOT a range reference",
+    "reason": "Numbers only reliably converts to Pop-Up Menu when validation is one range rule, not per-cell rules",
+    "status_options": ["Interview set up", "Interview complete", "Offer made", "Hired", "Rejected", "No Show/No Response"],
+    "layout": "6 columns: Name, Role, Shop, Phone, Status (yellow highlight), Notes",
+    "ux_features": ["Instruction banner row 1", "Frozen top 2 rows", "Alternating row colors"]
+  },
+  "hired_tab_logic": {
+    "method": "Live filter of getDB() where status === 'Hired'",
+    "sync": "renderHired() called on every updateStatus() and tab switch",
+    "data_integrity": "Candidate remains in Database tab — no deletion or move",
+    "toast": "Special '🏆 Added to Hired Team!' toast on hire"
+  },
   "mobile_optimizations": {
     "viewport": "iPhone 14/15 Optimized (390px-430px)",
     "phone_display": "Dedicated full-width row (No truncation)",
@@ -18,6 +40,6 @@
     "cache_control": "Force Hard Reload Button (top-screen)"
   },
   "parser_logic": "Matches keywords: Service Advisor, A-Level Technician, Technician, Southfield, Waterford, Troy, Shelby Township, Utica.",
-  "last_maintenance": "2026-04-02",
-  "maintenance_notes": "Permanently deleted legacy sync.yml to stop error emails."
+  "last_maintenance": "2026-04-08",
+  "maintenance_notes": "v3.4.0: Hired Team tab, Numbers dropdown fix (range-based), real-time search bar, mobile-friendly Excel layout."
 }

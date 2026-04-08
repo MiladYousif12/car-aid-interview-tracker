@@ -1,15 +1,60 @@
-# How to Resume This Agent Session
+# RESUME.md — Car Aid Recruiting Pro
 
-To pick up exactly where we left off, simply follow these steps in your next chat:
+## Current Baseline: v3.4.0-Pro
+**Last Updated**: April 8, 2026
 
-1.  **Open this Project Folder**: Make sure the AI has access to the `/Users/mike/.gemini/antigravity/scratch/car-aid-interview-tracker` directory.
-2.  **Initial Prompt**: Tell the AI: 
-    > "Read the `.agent/` folder and `next_actions.md` to understand the current v3.3.4 baseline and the roadmap."
-3.  **Automatic Context**: The AI will then read your **`agent_config.json`** (architecture), **`session_log.md`** (history), and **`next_actions.md`** (todo list) to reconstruct the full context of today's work.
+---
 
-### 📁 Important Files for the AI:
-- **[.agent/agent_config.json](file:///Users/mike/.gemini/antigravity/scratch/car-aid-interview-tracker/.agent/agent_config.json)**: Contains the parser logic, local storage keys, and UI specs.
-- **[.agent/session_log.md](file:///Users/mike/.gemini/antigravity/scratch/car-aid-interview-tracker/.agent/session_log.md)**: Explains the "Why" behind the 100% Local-First decision.
-- **[.agent/next_actions.md](file:///Users/mike/.gemini/antigravity/scratch/car-aid-interview-tracker/.agent/next_actions.md)**: Lists exactly what we planned to do next.
+## How to Resume This Session
 
-This setup ensures that no matter when you return, the **Car Aid Recruiting Agent** will be ready to go with 100% memory of our v3.3.4 Professional Upgrade!
+Tell the AI:
+> "I am resuming the Car Aid Recruiting project at v3.4.0. Read `.agent/agent_config.json` and `.agent/session_log.md` to sync context."
+
+Then open the project directory:
+```
+/Users/mike/.gemini/antigravity/scratch/car-aid-interview-tracker/
+```
+
+---
+
+## Live Links
+
+| Resource | URL |
+|---|---|
+| **Live App** | https://miladyousif12.github.io/car-aid-interview-tracker/ |
+| **GitHub Repo** | https://github.com/MiladYousif12/car-aid-interview-tracker |
+| **Latest Commit** | `2e23661` — v3.4.0-Pro Hired Team tab |
+
+---
+
+## Critical Context (Do Not Re-Explain)
+
+| Topic | Summary |
+|---|---|
+| **Architecture** | 100% local-first, `localStorage` key = `caraid_candidates_v3_1`, zero server dependency |
+| **Excel/Numbers Fix** | Must use `sheet.dataValidations.add(range, {...})` — NOT per-cell loop — and a literal formula string |
+| **Hired Tab** | `renderHired()` filters `getDB()` where `status === 'Hired'`, called by `updateStatus()` automatically |
+| **Search Bar** | In Database tab, filters by name/role/shop, real-time via `renderList()` checking `search-input` value |
+| **Tabs** | `showView('log')`, `showView('list')`, `showView('hired')` — three tabs, active-hired class for Hired tab |
+| **Status Options** | Interview set up / Interview complete / Offer made / Hired / Rejected / No Show/No Response |
+
+---
+
+## Open Loops to Pick Up Next
+
+1. **Sal verification** — confirm Numbers dropdown works on all rows (v3.3.6 fix)
+2. **Hired CSV export** — download just hired list
+3. **SMS link integration** — `sms:` links on candidate cards
+4. **Date Hired field** — separate from interview date, auto-set on Hired status
+
+---
+
+## Key Files
+
+| File | Purpose |
+|---|---|
+| `index.html` | Entire app — UI, logic, styles, all-in-one |
+| `.agent/agent_config.json` | Architecture, feature map, Excel logic, parser rules |
+| `.agent/session_log.md` | Full history of decisions and changes |
+| `.agent/next_actions.md` | Backlog, open loops, pending decisions |
+| `RECOVER_AGENT.md` | Disaster recovery — how to restore on new machine |
