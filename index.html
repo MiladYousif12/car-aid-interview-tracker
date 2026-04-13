@@ -325,10 +325,70 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const DB_KEY = 'caraid_candidates_v3_1';
-        const getDB = () => JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-        const saveDB = (d) => localStorage.setItem(DB_KEY, JSON.stringify(d));
+        // Car Aid Recruiting PRO v5.1.0-Cloud (Fresh Project)
+        const SB_URL = 'https://rziobgjwhhhpwjraunoj.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6aW9iZ2p3aGhocHdqcmF1bm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMTgyOTYsImV4cCI6MjA5MTY5NDI5Nn0.QJhH7IX0J_yufZVqgmvi6SSYAfnL83TGOjjYcUQud2Y';
+        const sb = supabase.createClient(SB_URL, SB_KEY);
+
+        let GLOBAL_DATA = [];
+
+        const getDB = () => GLOBAL_DATA;
+        
+        async function fetchFromCloud() {
+            const { data, error } = await sb
+                .from('candidates')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error("Cloud Fetch Error:", error);
+                // Fallback to local storage if offline or table missing
+                return JSON.parse(localStorage.getItem('caraid_candidates_v3_1') || '[]');
+            }
+            return data || [];
+        }
+
+        async function saveToCloud(cand) {
+            const { error } = await sb
+                .from('candidates')
+                .upsert(cand);
+            
+            if (error) {
+                console.error("Cloud Save Error:", error);
+                showToast("Offline: Saved locally only", true);
+            }
+        }
+
+        async function deleteFromCloud(id) {
+            const { error } = await sb
+                .from('candidates')
+                .delete()
+                .eq('id', id);
+            
+            if (error) console.error("Cloud Delete Error:", error);
+        }
+
+        // Initialize App
+        async function initApp() {
+            GLOBAL_DATA = await fetchFromCloud();
+            renderList();
+            renderHired();
+            
+            // Real-time listener for multi-device sync
+            sb
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'candidates' }, async () => {
+                    console.log("☁️ Cloud Update Detected...");
+                    GLOBAL_DATA = await fetchFromCloud();
+                    renderList();
+                    renderHired();
+                })
+                .subscribe();
+        }
+
+        window.onload = initApp;
 
         function runEmergencyRecovery() {
             // ... (keep current recovery code)
@@ -575,8 +635,15 @@
             };
             const db = getDB();
             const idx = db.findIndex(c => c.id === cand.id);
+            
+            // Local update for instant UI feedback
             if (idx > -1) db[idx] = cand; else db.unshift(cand);
-            saveDB(db);
+            GLOBAL_DATA = db;
+            renderList();
+            
+            // Cloud Sync (Background)
+            saveToCloud(cand);
+            
             showToast("CANDIDATE SAVED! ✅");
             this.reset(); document.getElementById('edit-id').value = "";
             document.getElementById('date').valueAsDate = new Date();
@@ -603,8 +670,8 @@
             if (data.length === 0) { 
                 container.innerHTML = query ? 
                     '<div style="text-align:center; padding:40px; color:var(--text-dim);">No matches found.</div>' : 
-                    '<div style="text-align:center; padding:40px; opacity:0.3;">Empty</div>'; 
-                recoveryZone.style.display = data.length === 0 && !query ? 'block' : 'none';
+                    '<div style="text-align:center; padding:40px; opacity:0.3;">Click ✍️ NEW to add or sync with Cloud</div>'; 
+                recoveryZone.style.display = 'none'; // Disabled for cloud version
                 return; 
             } else {
                 recoveryZone.style.display = 'none';
@@ -656,13 +723,17 @@
             }).join('');
         }
 
-        function updateStatus(id, newStatus) {
+        async function updateStatus(id, newStatus) {
             console.log("Updating status for", id, "to", newStatus);
             const db = getDB();
             const idx = db.findIndex(c => String(c.id) === String(id));
             if (idx > -1) {
                 db[idx].status = newStatus;
-                saveDB(db);
+                GLOBAL_DATA = db;
+                
+                // Cloud Sync
+                await saveToCloud(db[idx]);
+                
                 renderList();
                 renderHired(); // keep hired page in sync
                 if (newStatus === 'Hired') showToast('🏆 Added to Hired Team!');
@@ -690,10 +761,16 @@
             showView('log'); window.scrollTo(0,0);
         }
 
-        function deleteCandidate(id) {
+        async function deleteCandidate(id) {
             if (!confirm("Delete this Candidate Card?")) return;
             const db = getDB().filter(c => c.id !== id);
-            saveDB(db); renderList(); showToast("Record Deleted.");
+            GLOBAL_DATA = db;
+            
+            // Cloud Sync
+            await deleteFromCloud(id);
+            
+            renderList(); 
+            showToast("Record Deleted.");
         }
 
         function showView(v) {
@@ -722,8 +799,7 @@
         }
 
         document.getElementById('date').valueAsDate = new Date();
-        renderList();
-        renderHired();
+        // initApp handles the first render
 
         function renderHired() {
             const hired = getDB().filter(c => c.status === 'Hired');
