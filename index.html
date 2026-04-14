@@ -895,7 +895,6 @@
                         </div>
                     </div>
                     <div class="cand-actions">
-                        <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
                         ${currentUserRole === 'admin' ? `<button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>` : ''}
                         <select class="quick-status-select" onchange="updateStatus('${c.id}', this.value)" style="flex: 1.5; min-width: 0;">
                             ${STATUS_OPTIONS.map(s => {
