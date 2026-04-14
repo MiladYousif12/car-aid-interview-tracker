@@ -321,7 +321,7 @@
                         <div class="form-group"><label>Email</label><input type="email" id="email"></div>
                         <div class="form-group"><label>Status</label>
                             <select id="status">
-                                <option value="Pending">🕒 Pending</option>
+                                <option value="Decision Pending">🕒 Decision Pending</option>
                                 <option value="Sent To Sal">📤 Sent To Sal</option>
                                 <option value="Interview Confirmed">🗓️ Interview Confirmed</option>
                                 <option value="Rejected">❌ Rejected</option>
@@ -691,7 +691,7 @@
         }
 
         const STATUS_OPTIONS = [
-            { val: "Pending", icon: "🕒", class: "status-pending" },
+            { val: "Decision Pending", icon: "🕒", class: "status-pending" },
             { val: "Sent To Sal", icon: "📤", class: "status-sent" },
             { val: "Interview Confirmed", icon: "🗓️", class: "status-confirmed" },
             { val: "Hired", icon: "✅", class: "status-hired" },
@@ -851,7 +851,9 @@
 
             container.innerHTML = data.map(c => {
                 const isAdv = c.role && c.role.toLowerCase().includes('advisor');
-                const stat = STATUS_OPTIONS.find(s => s.val === (c.status || "Pending")) || STATUS_OPTIONS[0];
+                const rawStatus = c.status || "Decision Pending";
+                const normalizedStatus = rawStatus === "Pending" ? "Decision Pending" : rawStatus;
+                const stat = STATUS_OPTIONS.find(s => s.val === normalizedStatus) || STATUS_OPTIONS[0];
                 return `
                 <div class="candidate-card">
                     <div class="cand-name-row">
@@ -887,7 +889,11 @@
                         <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
                         ${currentUserRole === 'admin' ? `<button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>` : ''}
                         <select class="quick-status-select" onchange="updateStatus('${c.id}', this.value)" style="flex: 1.5; min-width: 0;">
-                            ${STATUS_OPTIONS.map(s => `<option value="${s.val}" ${s.val === (c.status || "Pending") ? 'selected' : ''}>${s.icon} ${s.val}</option>`).join('')}
+                            ${STATUS_OPTIONS.map(s => {
+                                const currentStatus = c.status || "Decision Pending";
+                                const isSelected = (s.val === currentStatus) || (s.val === "Decision Pending" && currentStatus === "Pending");
+                                return `<option value="${s.val}" ${isSelected ? 'selected' : ''}>${s.icon} ${s.val}</option>`;
+                            }).join('')}
                         </select>
                         ${currentUserRole === 'admin' ? `<button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>` : ''}
                     </div>
@@ -918,7 +924,7 @@
         function copyBrief(id) {
             const c = getDB().find(item => item.id === id);
             if (!c) return;
-            const b = `CANDIDATE: ${c.first_name} ${c.last_name}\nSTATUS: ${c.status || 'Pending'}\nROLE: ${c.role}\nLOCATION: ${c.shop}\nPHONE: ${c.mobile}\nEXP: ${c.exp}\nASE: ${c.alc_status}\nAVG RO: ${c.ro_size}\nDATE: ${c.date}\nNOTES: ${c.notes}`;
+            const b = `CANDIDATE: ${c.first_name} ${c.last_name}\nSTATUS: ${c.status || 'Decision Pending'}\nROLE: ${c.role}\nLOCATION: ${c.shop}\nPHONE: ${c.mobile}\nEXP: ${c.exp}\nASE: ${c.alc_status}\nAVG RO: ${c.ro_size}\nDATE: ${c.date}\nNOTES: ${c.notes}`;
             navigator.clipboard.writeText(b).then(() => showToast("COPIED! 📋 Ready to text owner."));
         }
 
@@ -928,7 +934,7 @@
             document.getElementById('edit-id').value = c.id;
             ['first_name','last_name','mobile','shop','role','exp','cur_shop','alc_status','ro_size','email','status','date','notes'].forEach(k => {
                 const el = document.getElementById(k);
-                if (el) el.value = c[k] || (k === 'status' ? 'Pending' : '');
+                if (el) el.value = (c[k] === 'Pending' ? 'Decision Pending' : c[k]) || (k === 'status' ? 'Decision Pending' : '');
             });
             showView('log'); window.scrollTo(0,0);
         }
