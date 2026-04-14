@@ -391,7 +391,16 @@
         let currentUserRole = 'user'; 
 
         const getDB = () => GLOBAL_DATA;
-        const generateID = () => Date.now();
+        const generateUUID = () => {
+            try { return crypto.randomUUID(); } 
+            catch(e) { return 'cand_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(); }
+        };
+        
+        let syncLock = Promise.resolve();
+        async function queueSync(task) {
+            syncLock = syncLock.then(() => task()).catch(e => console.error("Sync Critical Error:", e));
+            return syncLock;
+        }
         
         async function initApp() {
             // Check current session
@@ -507,14 +516,22 @@
             return data || [];
         }
 
-        async function saveToCloud(cand) {
-            console.log("☁️ Attempting Cloud Sync:", cand);
-            const { error } = await sb.from('candidates').upsert(cand);
-            if (error) {
-                console.error("Cloud Save Error:", error);
-                alert("🛑 CLOUD SYNC ERROR: " + error.message + "\n\nDetails: " + (error.details || 'None') + "\nHint: " + (error.hint || 'None'));
-                showToast("Sync Failed: " + error.message, true);
-                throw error;
+        async function saveToCloud(cand, retries = 3) {
+            console.log(`☁️ Cloud Sync [Attempts left: ${retries}]:`, cand.id);
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const { error } = await sb.from('candidates').upsert(cand);
+                    if (!error) return; // Success
+                    
+                    if (i === retries - 1) throw error;
+                    console.warn(`⚠️ Sync Attempt ${i+1} failed, retrying...`);
+                    await new Promise(r => setTimeout(r, 1000));
+                } catch (err) {
+                    if (i === retries - 1) {
+                        alert("🛑 PERMANENT SYNC ERROR: " + err.message);
+                        throw err;
+                    }
+                }
             }
         }
 
@@ -764,7 +781,8 @@
             }
 
             const cand = {
-                id: document.getElementById('edit-id').value || String(Date.now()),
+                id: document.getElementById('edit-id').value || generateUUID(),
+                user_id: currentUser ? currentUser.id : null,
                 first_name: document.getElementById('first_name').value,
                 last_name: document.getElementById('last_name').value,
                 mobile: document.getElementById('mobile').value,
@@ -786,22 +804,22 @@
             // Local update for instant UI feedback
             if (idx > -1) db[idx] = cand; else db.unshift(cand);
             GLOBAL_DATA = db;
-            renderList();
-            
-            // Cloud Sync
-            showToast("⏳ Syncing to Cloud...");
-            try {
-                await saveToCloud(cand);
-                showToast("CANDIDATE SAVED & SYNCED! ✅");
-                this.reset(); 
-                document.getElementById('raw-text').value = ""; // Magic Scan Reset
-                document.getElementById('edit-id').value = "";
-                document.getElementById('date').valueAsDate = new Date();
-                setTimeout(() => showView('list'), 400);
-            } catch (err) {
-                // Error already handled in saveToCloud via toast
-                console.error("Submission failed sync:", err);
-            }
+            // Integrated Cloud Sync Queue
+            showToast("⏳ Safeguarding to Cloud...");
+            queueSync(async () => {
+                try {
+                    await saveToCloud(cand);
+                    showToast("CANDIDATE SAVED & SYNCED! ✅");
+                } catch (e) {
+                    showToast("❌ Sync Interrupted. Check connection.", true);
+                }
+            });
+
+            this.reset();
+            document.getElementById('raw-text').value = ""; 
+            document.getElementById('edit-id').value = "";
+            document.getElementById('date').valueAsDate = new Date();
+            setTimeout(() => showView('list'), 400);
         };
 
         function renderList() {
