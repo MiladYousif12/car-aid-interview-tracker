@@ -508,9 +508,11 @@
         }
 
         async function saveToCloud(cand) {
+            console.log("☁️ Attempting Cloud Sync:", cand);
             const { error } = await sb.from('candidates').upsert(cand);
             if (error) {
                 console.error("Cloud Save Error:", error);
+                alert("🛑 CLOUD SYNC ERROR: " + error.message + "\n\nDetails: " + (error.details || 'None') + "\nHint: " + (error.hint || 'None'));
                 showToast("Sync Failed: " + error.message, true);
                 throw error;
             }
@@ -780,14 +782,14 @@
             };
 
             const db = getDB();
-            const idx = db.findIndex(c => c.id === cand.id);
+            const idx = db.findIndex(c => String(c.id) === String(cand.id));
             
             // Local update for instant UI feedback
             if (idx > -1) db[idx] = cand; else db.unshift(cand);
             GLOBAL_DATA = db;
             renderList();
             
-            // Cloud Sync (With status feedback)
+            // Cloud Sync
             showToast("⏳ Syncing to Cloud...");
             try {
                 await saveToCloud(cand);
