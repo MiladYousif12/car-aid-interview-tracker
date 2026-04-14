@@ -244,11 +244,11 @@
     <div id="toast"></div>
 
     <script>
-        // FAST-LOCK: Prevent login flicker if session exists
+        // SMART-LOCK: Set immediate visibility if we have a token (but don't force it)
         (function() {
             const sbSession = localStorage.getItem('sb-rziobgjwhhhpwjraunoj-auth-token');
-            if (sbSession) {
-                document.write('<style>#auth-overlay { display: none !important; } #app-container { display: block !important; }</style>');
+            if (sbSession && !sessionStorage.getItem('logging_out')) {
+                document.documentElement.style.visibility = 'hidden'; // Hide till JS takes over
             }
         })();
     </script>
@@ -391,7 +391,7 @@
         let currentUserRole = 'user'; 
 
         const getDB = () => GLOBAL_DATA;
-        const generateID = () => 'cand_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        const generateID = () => Date.now();
         
         async function initApp() {
             // Check current session
@@ -416,6 +416,8 @@
                 GLOBAL_DATA = await fetchFromCloud();
                 
                 console.log(`📊 Cloud Audit: Loaded ${GLOBAL_DATA.length} candidates.`);
+
+                document.documentElement.style.visibility = 'visible';
                 
                 // Redirect non-admins to list view immediately
                 if (currentUserRole !== 'admin') {
@@ -427,6 +429,7 @@
                 setupRealtime();
             } else {
                 currentUser = null;
+                document.documentElement.style.visibility = 'visible';
                 document.getElementById('auth-overlay').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
                 document.getElementById('auth-msg').innerText = "";
@@ -473,7 +476,9 @@
         }
 
         async function signOut() {
+            sessionStorage.setItem('logging_out', 'true');
             await sb.auth.signOut();
+            localStorage.removeItem('sb-rziobgjwhhhpwjraunoj-auth-token');
             location.reload();
         }
 
@@ -758,6 +763,7 @@
 
             const cand = {
                 id: document.getElementById('edit-id').value || generateID(),
+                user_id: currentUser.id,
                 first_name: document.getElementById('first_name').value,
                 last_name: document.getElementById('last_name').value,
                 mobile: document.getElementById('mobile').value,
