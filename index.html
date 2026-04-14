@@ -243,6 +243,16 @@
 
     <div id="toast"></div>
 
+    <script>
+        // FAST-LOCK: Prevent login flicker if session exists
+        (function() {
+            const sbSession = localStorage.getItem('sb-rziobgjwhhhpwjraunoj-auth-token');
+            if (sbSession) {
+                document.write('<style>#auth-overlay { display: none !important; } #app-container { display: block !important; }</style>');
+            }
+        })();
+    </script>
+
     <div id="auth-overlay" style="display:flex;">
         <div class="auth-card card" style="margin-bottom:0;">
             <header>
@@ -262,7 +272,10 @@
     <div class="container" id="app-container" style="display:none;">
         <div class="logout-row">
             <div class="user-info">Logged in as: <span id="current-user-email">...</span> <span id="role-tag" class="version-badge">USER</span></div>
-            <button class="btn-logout" onclick="signOut()">LOGOUT 🚪</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-logout" style="color:var(--accent-blue); border-color:var(--accent-blue);" onclick="location.reload(true)">🔄 REFRESH</button>
+                <button class="btn-logout" onclick="signOut()">LOGOUT 🚪</button>
+            </div>
         </div>
         <div class="card">
 
@@ -273,7 +286,7 @@
             </header>
 
             <div class="tabs">
-                <button class="tab-btn active" id="tab-log" onclick="showView('log')">✍️ NEW</button>
+                <button class="tab-btn admin-only" id="tab-log" onclick="showView('log')">✍️ NEW</button>
                 <button class="tab-btn" id="tab-view" onclick="showView('list')">📋 DATABASE</button>
                 <button class="tab-btn" id="tab-hired" onclick="showView('hired')">🏆 HIRED</button>
             </div>
@@ -365,13 +378,20 @@
         // Car Aid Recruiting PRO v5.1.1-Cloud (Auth Version)
         const SB_URL = 'https://rziobgjwhhhpwjraunoj.supabase.co';
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6aW9iZ2p3aGhocHdqcmF1bm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMTgyOTYsImV4cCI6MjA5MTY5NDI5Nn0.QJhH7IX0J_yufZVqgmvi6SSYAfnL83TGOjjYcUQud2Y';
-        const sb = supabase.createClient(SB_URL, SB_KEY);
+        const sb = supabase.createClient(SB_URL, SB_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
         
         let GLOBAL_DATA = [];
         let currentUser = null;
         let currentUserRole = 'user'; 
 
         const getDB = () => GLOBAL_DATA;
+        const generateID = () => 'cand_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         
         async function initApp() {
             // Check current session
@@ -394,8 +414,16 @@
                 
                 showToast("🌎 Connecting to Cloud...");
                 GLOBAL_DATA = await fetchFromCloud();
-                renderList();
-                renderHired();
+                
+                console.log(`📊 Cloud Audit: Loaded ${GLOBAL_DATA.length} candidates.`);
+                
+                // Redirect non-admins to list view immediately
+                if (currentUserRole !== 'admin') {
+                    showView('list');
+                } else {
+                    renderList();
+                    renderHired();
+                }
                 setupRealtime();
             } else {
                 currentUser = null;
@@ -411,10 +439,13 @@
                 if (data) {
                     currentUserRole = data.role;
                     document.getElementById('role-tag').innerText = currentUserRole.toUpperCase();
+                    
                     if (currentUserRole !== 'admin') {
                         document.body.classList.add('is-viewer');
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
                     } else {
                         document.body.classList.remove('is-viewer');
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
                     }
                 }
             } catch (e) { console.error("Role fetch error:", e); }
@@ -621,10 +652,15 @@
                 });
 
                 if (confirm(`Import ${newCandidates.length} candidates? This will merge with existing data.`)) {
-                    const current = getDB();
-                    saveDB([...current, ...newCandidates]);
-                    renderList();
-                    showToast(`✅ Successfully Imported ${newCandidates.length} Candidates!`);
+                    showToast("⏳ Batch Syncing to Cloud...");
+                    (async function() {
+                        for (let c of newCandidates) {
+                            await saveToCloud(c);
+                        }
+                        GLOBAL_DATA = await fetchFromCloud();
+                        renderList();
+                        showToast(`✅ Successfully Imported ${newCandidates.length} Candidates!`);
+                    })();
                 }
             };
             reader.readAsText(file);
@@ -715,8 +751,13 @@
 
         document.getElementById('candidate-form').onsubmit = async function(e) {
             e.preventDefault();
+            
+            if (currentUserRole !== 'admin') {
+                return showToast("⚠️ Permission Denied: Only Admins can add/edit.", true);
+            }
+
             const cand = {
-                id: document.getElementById('edit-id').value || Date.now().toString(),
+                id: document.getElementById('edit-id').value || generateID(),
                 first_name: document.getElementById('first_name').value,
                 last_name: document.getElementById('last_name').value,
                 mobile: document.getElementById('mobile').value,
@@ -746,6 +787,7 @@
                 await saveToCloud(cand);
                 showToast("CANDIDATE SAVED & SYNCED! ✅");
                 this.reset(); 
+                document.getElementById('raw-text').value = ""; // Magic Scan Reset
                 document.getElementById('edit-id').value = "";
                 document.getElementById('date').valueAsDate = new Date();
                 setTimeout(() => showView('list'), 400);
@@ -818,11 +860,11 @@
                     </div>
                     <div class="cand-actions">
                         <button class="action-btn btn-copy" onclick="copyBrief('${c.id}')">📋 SHARE</button>
-                        <button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>
+                        ${currentUserRole === 'admin' ? `<button class="action-btn btn-edit" onclick="editCandidate('${c.id}')">✏️ EDIT</button>` : ''}
                         <select class="quick-status-select" onchange="updateStatus('${c.id}', this.value)" style="flex: 1.5; min-width: 0;">
                             ${STATUS_OPTIONS.map(s => `<option value="${s.val}" ${s.val === (c.status || "Pending") ? 'selected' : ''}>${s.icon} ${s.val}</option>`).join('')}
                         </select>
-                        <button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>
+                        ${currentUserRole === 'admin' ? `<button class="action-btn btn-del" onclick="deleteCandidate('${c.id}')">🗑️ DEL</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -867,6 +909,9 @@
         }
 
         async function deleteCandidate(id) {
+            if (currentUserRole !== 'admin') {
+                return showToast("⚠️ Permission Denied: Only Admins can delete.", true);
+            }
             if (!confirm("Delete this Candidate Card?")) return;
             const db = getDB().filter(c => c.id !== id);
             GLOBAL_DATA = db;
