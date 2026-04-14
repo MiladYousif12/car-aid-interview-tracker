@@ -176,6 +176,7 @@
         .status-confirmed { background: var(--stat-confirmed); color: black; }
         .status-rejected { background: var(--stat-rejected); color: white; }
         .status-hired { background: var(--stat-hired); color: white; }
+        .status-noshow { background: #f59e0b; color: white; }
 
             .quick-status-select {
                 background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border-color);
@@ -324,6 +325,8 @@
                                 <option value="Decision Pending">🕒 Decision Pending</option>
                                 <option value="Sent To Sal">📤 Sent To Sal</option>
                                 <option value="Interview Confirmed">🗓️ Interview Confirmed</option>
+                                <option value="Interview No Show">📵 Interview No Show</option>
+                                <option value="No Show After Hire">🚶‍♂️ No Show After Hire</option>
                                 <option value="Rejected">❌ Rejected</option>
                                 <option value="Hired">✅ Hired</option>
                             </select>
@@ -694,6 +697,8 @@
             { val: "Decision Pending", icon: "🕒", class: "status-pending" },
             { val: "Sent To Sal", icon: "📤", class: "status-sent" },
             { val: "Interview Confirmed", icon: "🗓️", class: "status-confirmed" },
+            { val: "Interview No Show", icon: "📵", class: "status-noshow" },
+            { val: "No Show After Hire", icon: "🚶‍♂️", class: "status-noshow" },
             { val: "Hired", icon: "✅", class: "status-hired" },
             { val: "Rejected", icon: "❌", class: "status-rejected" }
         ];
